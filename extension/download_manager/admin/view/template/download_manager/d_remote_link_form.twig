@@ -1,0 +1,128 @@
+<div class="row mb-3 ">
+    <label class="col-sm-2 col-form-label" for="input-mask"><span data-toggle="tooltip" title="{{ help_remote_type }}">{{ text_remote_type }}</span></label>
+    <!-- <div class="col-sm-4">
+        <input type="hidden" name="download_type" value="0"/>
+        <input type="checkbox" class="form-control switcher"
+               id="switch"
+               name="download_type"
+               data-label-text="{{ text_enabled }}"
+               value="1"/>
+    </div> -->
+    <div class="col-sm-4">
+        <div class="btn-group">
+            <div class="btn-group">
+                <input type="radio" name="download_type" value="1" id="switch_enable" class="btn-check" {% if (type == 1) %}checked{%endif%}/> 
+                <label for="switch_enable" class="btn btn-outline-secondary">{{ text_yes }}</label> 
+                <input type="radio" name="download_type" value="0" id="switch_disable" class="btn-check" {% if (type == 0) %}checked{%endif%}/> 
+                <label for="switch_disable" class="btn btn-outline-secondary">{{ text_no }}</label>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row mb-3 required" id="link" style="display: none;">
+    <label class="col-sm-2 col-form-label" for="input-mask"><span data-toggle="tooltip" title="{{ help_remote }}">{{ text_remote_link }}</span></label>
+    <div class="col-sm-10">
+        <div class="input-group">
+            <span class="input-group-text">Link</span>
+            <input type="text" placeholder="Type here the link"
+                   class="form-control"
+                   name="link"
+                   id="downloadLink"
+                   value="{{ link }}">
+            <span class="input-group-btn">
+                 <button id="generateMask"
+                         class="btn btn-success btn-sm" type="button"
+                         data-toggle="tooltip"
+                         data-original-title="Generate Mask">
+                    <i class="fas fa-sync" aria-hidden="true"></i>
+                </button>
+             </span>
+        </div>
+    </div>
+    <style>
+        #generateMask {
+            height: 41px;
+            width: 135px;
+        }
+    </style>
+    {% if type %}
+        <script type="text/javascript">
+            // $(window).load(function () {
+            //     $("#switch").click();
+            //     $(".form-group:eq(3)").css("display", "none");
+            
+            //     $("#link").css("display", "block");
+            // });
+        </script>
+    {% endif %}
+    <script type="text/javascript">
+        function isUrl(s) {
+            var regexp = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
+            return regexp.test(s);
+        }
+        // $(window).load(function () {
+            // $('#switch').on('switchChange.bootstrapSwitch', function (e, data) {
+            //     if ($('#switch').is(':checked')) {
+            //         $("#link").css("display", "block");
+            //         $(".form-group:eq(3)").css("display", "none");
+            //         $("#input-filename").val("d_remote_pack.txt");
+            //     }
+            //     else {
+            //         $("#link").css("display", "none");
+            //         $(".form-group:eq(3)").css("display", "block");
+            //     }
+            // });
+
+
+        // });
+
+
+        //checkbox
+        // $(".switcher[type='checkbox']").bootstrapSwitch({
+        //     'onColor': 'success',
+        //     'onText': '{{ text_yes }}',
+        //     'offText': '{{ text_no }}',
+        //     'onSwitchChange': function (event, state) {
+        //         if (event.target.name == 'setting[limit_block]' && state == true) {
+        //             $('.switcher[name=\'setting[limit_height]\']').bootstrapSwitch({'state': 'false'});
+        //         }
+        //         if (event.target.name == 'setting[limit_height]' && state == true) {
+        //             $('.switcher[name=\'setting[limit_height]\']').bootstrapSwitch({'state': 'false'});
+        //         }
+        //     }
+        // });
+
+
+        $(document).ready(function(){
+            {% if (type == 0) %} 
+                $("#link").hide();
+                $("#link").next(".row").show();
+            {%else%}
+                $("#link").show();
+                $("#link").next(".row").hide();
+            {%endif%}
+            $('body').on('click', "#switch_enable", function(){
+                $("#link").show();
+                $("#link").next(".row").hide();
+            });
+            $('body').on('click', "#switch_disable", function(){
+                $("#link").hide();
+                $("#link").next(".row").show();
+                $("#input-filename").val("d_remote_pack.txt");
+            });
+
+            $('body').on('click', '#generateMask', function (e) {
+                if (isUrl($('#downloadLink').val())) {
+                    var url = $('#downloadLink').val();
+                    var parts = url.split("/");
+                    var last_part = parts[parts.length - 1];
+                    $('#input-mask').val(last_part);
+                    alert('{{ text_generated_mask }}');
+                } else {
+                    alert('{{ text_error_url }}')
+                }
+            });
+        });
+            console.log('123');
+    </script>
+</div>

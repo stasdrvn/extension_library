@@ -1,0 +1,176 @@
+<div class="card" id="pan">
+    <div class="card-header">
+        <i class="fa fa-shopping-cart"></i>Products with this download
+    </div>
+    <div class="card-body">
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <td class="text-center">{{ entry_product_image }}</td>
+                <td class="text-left">{{ entry_product_name }}</td>
+                <td class="text-left">{{ entry_product_model }}</td>
+                <td class="text-left">{{ entry_expired_days }}</td>
+                <td class="text-left">{{ entry_product_price }}</td>
+                <td class="text-left">{{ entry_product_status }}</td>
+                <td class="text-center">{{ entry_action }}</td>
+            </tr>
+            </thead>
+            <tbody>
+            {% for product in products %}
+                <tr id="tr{{ product.product_id }}">
+                    <td style="text-align: center"><img src="{{ product.product_image }}" alt="{{ product.name }}"
+                                                        class="img-thumbnail"/></td>
+                    <td>{{ product.name }}</td>
+                    <td>{{ product.model }}</td>
+
+                    <td>
+                        <div class="input-group">
+                            <span class="input-group-text">{{ text_days }}</span>
+                            <input type="number" placeholder="{{ number_of_days }}"
+                                   class="form-control" min="-1"
+                                   name="days[{{ product.product_id }}]"
+                                   id="oneProductDays_{{ product.product_id }}"
+                                   value="{{ product.download_period }}">
+                            <span class="input-group-btn">
+                            <button id="SaveProductDate"
+                                    class="btn btn-primary btn-sm" type="button"
+                                    data-product-id="{{ product.product_id }}">
+
+                                <i class="fa fa-save" aria-hidden="true"></i>
+                            </button>
+                            <button id="ResetProductDate"
+                                    class="btn btn-danger btn-sm"
+                                    type="button"
+                                    data-product-reset-id="{{ product.product_id }}">
+
+                                    <i class="fas fa-sync"></i>
+                            </button>
+                            </span>    
+                        </div>
+                    </td>
+                    <td class="text-center">{% if product.special %} <span
+                                style="text-decoration: line-through;">{{ product.price }}</span><br/>
+                            <div class="text-danger">{{ product.special }}</div>
+                        {% else %}
+                            {{ product.price }}
+                        {% endif %}</td>
+                    <td class="text-center">{% if product.status == "Enabled" %}
+                            <span class="label label-success">{{ product.status }}</span> {% elseif product.status == "Disabled" %}
+                            <span class="label label-danger">{{ product.status }}</span> {% else %}
+                            <span class="label label-success">{{ product.status }}</span> {% endif %}</td>
+                    <td class="text-center">
+                        <a href="{{ product.productHref }}" data-toggle="tooltip" title="Edit"
+                           class="btn btn-primary"><i class="fas fa-pencil-alt"></i></a>
+                        <input
+                                type="button"
+                                id="unlinkProduct"
+                                data-product-id="{{ product.product_id }}"
+                                class="btn btn-warning fa fa-input"
+                                data-toggle="tooltip" title="Unlink product from download"
+                                value="&#xf127;"/>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<style>
+    #unlinkProduct{
+        height: 42px;
+    }
+    td{
+        background-color: transparent !important;
+    }
+    #SaveProductDate{
+        width: 80px;
+        height: 41px;
+    }
+    #ResetProductDate{
+        width: 80px;
+        height: 41px;
+    }
+</style>
+<script type="text/javascript">
+    function getUrlVars() {
+        var vars = {};
+        var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function (m, key, value) {
+            vars[key] = value;
+        });
+        return vars;
+    }
+
+    $('body').on('click', '#SaveProductDate', function (e) {
+        var productID = $(e.currentTarget).attr('data-product-id');
+        var days = $('#oneProductDays_' + productID).val();
+
+        $.ajax({
+            url: '{{ set_product_expired_date_link }}',
+            type: 'post',
+            data: 'product_id=' + productID + '&productDays=' + days + '&download_id=' + {{ download_id }},
+            dataType: 'json',
+            beforeSend: function () {
+                $('#pan').fadeTo('slow', 0.5);
+            },
+            complete: function () {
+                $('#pan').fadeTo('slow', 1);
+            },
+            success: function (json) {
+
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+            }
+        });
+    });
+
+    $('body').on('click', '#ResetProductDate', function (e) {
+        var productID = $(e.currentTarget).attr('data-product-reset-id');
+
+        $.ajax({
+            url: '{{ reset_product_expired_date_link }}',
+            type: 'post',
+            data: 'download_id=' + {{ download_id }} +'&product_id=' + productID,
+            dataType: 'json',
+            beforeSend: function () {
+                $('#pan').fadeTo('slow', 0.5);
+            },
+            complete: function () {
+                $('#pan').fadeTo('slow', 1);
+            },
+            success: function (json) {
+
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                $('#oneProductDays_' + productID).val('');
+                return false;
+            }
+        });
+    });
+
+    $('body').on('click', '#unlinkProduct', function (e) {
+        const url = "{{ action }}";
+        const parseResult = new DOMParser().parseFromString(url, "text/html");
+        const parsedUrl = parseResult.documentElement.textContent;
+        var productID = $(e.currentTarget).attr('data-product-id');
+        var downloadID = getUrlVars()["download_id"];
+        $.ajax({
+            url: '{{ unlink_product_link }}',
+            type: 'post',
+            data: 'product_id=' + productID + '&download_id=' + downloadID,
+            dataType: 'json',
+            beforeSend: function () {
+                $('#pnl').fadeTo('slow', 0.5);
+            },
+            complete: function () {
+                $('#pnl').fadeTo('slow', 1);
+            },
+            success: function (json) {
+
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                $('#tr' + productID).remove();
+            }
+        });
+    });
+</script>

@@ -1,0 +1,21 @@
+<div class="tab-pane" id="tab-downloads">
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <td class="text-left">{{ entry_download_name }}</td>
+            <td class="text-left">{{ entry_mask }}</td>
+            <td class="text-left" style="text-align: center">{{ entry_action }}</td>
+        </tr>
+        </thead>
+        <tbody>
+        {% for download in downloads %}
+            <tr>
+                <td><a href="{{ download.orderHref }}" target="_blank">{{ download.name }}</a></td>
+                <td>{{ download.mask }}</td>
+                <td style="text-align: center"><a href="{{ download.downloadHref }}" data-toggle="tooltip" title="Edit"
+                                                  class="btn btn-primary"><i class="fas fa-pencil-alt"></i></a></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>

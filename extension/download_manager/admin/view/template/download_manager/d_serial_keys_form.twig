@@ -1,0 +1,681 @@
+<div class="row mb-3 ">
+    <label class="col-sm-2 col-form-label" for="input-mask"><span data-toggle="tooltip" title="{{ help_public_type }}">{{ text_public_type }}</span></label>
+    <!-- <div class="col-sm-4">
+        <input type="hidden" name="public_type" value="0"/>
+        <input type="checkbox" class="form-control switcher"
+               id="switch-public"
+               name="public_type"
+               data-label-text="{{ text_enabled }}"
+               value="1"
+                {% if public_type %} checked="checked"{% endif %}/>
+    </div> -->
+    <div class="col-sm-4">
+        <div class="btn-group">
+            <div class="btn-group">
+                <input type="radio" name="public_type" value="1" id="switch-public-enable" class="btn-check" {% if public_type %} checked="checked"{% endif %}/> 
+                <label for="switch-public-enable" class="btn btn-outline-secondary">{{ text_yes }}</label> 
+                <input type="radio" name="public_type" value="0" id="switch-public-disable" class="btn-check"{% if not public_type %} checked="checked"{% endif %}/> 
+                <label for="switch-public-disable" class="btn btn-outline-secondary">{{ text_no }}</label>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row mb-3" id="public_desc" {% if not public_type %}style="display: none;" {% endif %}>
+
+    <div class="col-sm-2"></div>
+    <div class="col-sm-10">
+        <div class="col-sm-offset-2">
+            <ul class="nav nav-tabs" id="language">
+                {% for language in languages %}
+                    <li>
+                        <a href="#language_{{ language.language_id }}" data-bs-toggle="tab"><img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}" /> {{ language.name }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="tab-pane" id="description">
+            {% for language in languages %}
+                <p></p>
+            <div class="tab-pane" id="language_{{ language.language_id }}">
+                <label class="col-sm-2 control-label" for="input-desc"><span data-toggle="tooltip" title="{{ help_public_desc }}">{{ text_public_desc }}</span></label>
+                <div class="col-sm-10">
+                    <textarea name="download_desc[{{ language.language_id }}]" placeholder="Description" rows="4" cols="50"  data-lang="{{ summernote }}" class="form-control">{{ download_descriptions[language.language_id] }}</textarea>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+<div class="row mb-3">
+    <label class="col-sm-2 col-form-label" for="input-mask"><span data-toggle="tooltip" title="{{ help_serial_type }}">{{ text_serial_key_type }}</span></label>
+    <!-- <div class="col-sm-4">
+        <input type="hidden" name="key_type" value="0"/>
+        <input type="checkbox" class="form-control switcher"
+               id="switch-key"
+               name="key_type"
+               data-label-text="{{ text_enabled }}"
+               value="1"
+                {% if key_type %} checked="checked"{% endif %}/>
+    </div> -->
+
+
+    <div class="col-sm-4">
+        <div class="btn-group">
+            <div class="btn-group">
+                <input type="radio" name="key_type" value="1" id="switch-key-enable" class="btn-check" {% if key_type %} checked="checked"{% endif %}/> 
+                <label for="switch-key-enable" class="btn btn-outline-secondary">{{ text_yes }}</label> 
+                <input type="radio" name="key_type" value="0" id="switch-key-disable" class="btn-check"{% if not key_type %} checked="checked"{% endif %}/> 
+                <label for="switch-key-disable" class="btn btn-outline-secondary">{{ text_no }}</label>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="keys" style="display: none;" class="row mb-3">
+
+    <div class="col-sm-2"></div>
+    <div class="col-sm-10">
+        <div class="row mb-3">
+            <label class="col-sm-2 control-label" for="input-mask"><span data-toggle="tooltip" title="{{ help_add_key }}">{{ text_add_key }}</span></label>
+            <div class="col-sm-3">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fa fa-key"></i></span>
+                    <input type="text" placeholder="{{ entry_serial_key }}"
+                           class="form-control" min="-1"
+                           id="oneDownloadSerialKey"
+                           value="">
+                    <span class="input-group-btn">
+                        <button id="AddSerialKey"
+                                class="btn btn-success btn-sm editablebt" type="button"
+                                data-toggle="tooltip"
+                                data-original-title="{{ entry_confirm }}"
+                                data-download-id="{{ download.download_id }}">
+                            <i class="fa fa-plus" aria-hidden="true"></i>
+                        </button>
+                    </span>
+                </div>
+            </div>
+            <label class="col-sm-2 col-sm-offset-2 control-label" for="input-mask"><span data-toggle="tooltip" title="{{ help_add_key_file }}">{{ text_add_key_with_txt_file }}</span></label>
+            <div class="col-sm-3">
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-file-text-o"></i></span>
+                    <input type="text" placeholder="{{ entry_filename }}"
+                           class="form-control" min="-1"
+                           id="serialKeyFile"
+                           disabled
+                           value="">
+                    <span class="input-group-btn">
+                <label id="file-label" class="btn btn-primary">{{ text_browse }}
+                    <input type="file" id="fileinput" hidden></label>
+                <button id="AddSerialKeysWithFile" style="display: none"
+                        class="btn btn-success btn-sm editablebt" type="button"
+                        data-toggle="tooltip"
+                        data-original-title="{{ entry_confirm }}">
+                            <i class="fa fa-check" aria-hidden="true"></i>
+                        </button>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <label class="col-sm-2 control-label" for="input-mask"><span data-toggle="tooltip" title="{{ help_keys }}">{{ text_serial_keys }}</label>
+            <div class="col-sm-5">
+                <table class="table table-resposive table-bordered" id="ser-table">
+                    <thead>
+                    <tr>
+                        <td class="text-center">{{ text_available_keys }}</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% if serial_keys %}
+                        {% for serial_key in serial_keys %}
+                            <tr id="tr-{{ serial_key.download_serial }}">
+                                <td>
+                                    <div class="input-group">
+                                        <input class="form-control" type="text" value="{{ serial_key.serial_key }}"
+                                               id="serialKey_{{ serial_key.download_serial }}"
+                                               name="serial_keys_ext[{{ serial_key.download_serial }}]">
+                                        <span class="input-group-btn">
+                                                <button class="btn btn-danger btn-sm rembt editablebt"
+                                                        data-download-serial="{{ serial_key.download_serial }}"
+                                                        id="removeKeyButton_{{ serial_key.download_serial }}" type="button"><i
+                                                            class="far fa-trash-alt"></i></button>
+                                            </span>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr id="no_keys" class="text-center">
+                            <td>
+                                <span class="label label-danger">{{ text_no_keys }}</span>
+                            </td>
+                        </tr>
+                    {% endif %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-sm-5">
+                <table class="table table-resposive table-bordered" id="ser-sold-table">
+                    <thead>
+                    <tr>
+                        <td class="text-center">{{ text_sold_keys }}</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% if sold_serial_keys %}
+                        {% for sold_serial_key in sold_serial_keys %}
+                            <tr id="tr-{{ sold_serial_key.download_serial }}">
+                                <td>
+                                    <div class="input-group">
+                                        <input class="form-control" type="text" value="{{ sold_serial_key.serial_key }}"
+                                               id="serialKey_{{ sold_serial_key.download_serial }}" disabled>
+                                        <span class="input-group-btn">
+                                                <button class="btn btn-danger btn-sm rembt editablebt"
+                                                        data-download-serial="{{ sold_serial_key.download_serial }}"
+                                                        id="removeKeyButton_{{ sold_serial_key.download_serial }}"
+                                                        type="button"><i class="far fa-trash-alt"></i></button>
+                                            </span>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr id="no_sold_keys" class="text-center">
+                            <td>
+                                <span class="label label-danger">{{ text_no_sold_keys }}</span>
+                            </td>
+                        </tr>
+                    {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
+<style>
+    table, th, td {
+        background-color: transparent !important;
+    }
+
+    .editablebt {
+        height: 41px;
+    }
+
+    [hidden] {
+        display: none !important;
+    }
+
+    .alert-minimalist {
+        background-color: rgb(241, 242, 240);
+        border-color: rgba(149, 149, 149, 0.3);
+        border-radius: 3px;
+        color: rgb(149, 149, 149);
+        padding: 10px;
+    }
+
+    .alert-minimalist > [data-notify="icon"] {
+        height: 50px;
+        margin-right: 12px;
+    }
+
+    .alert-minimalist > [data-notify="title"] {
+        color: rgb(51, 51, 51);
+        display: block;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+
+    .alert-minimalist > [data-notify="message"] {
+        font-size: 80%;
+    }
+</style>
+
+<script>
+    {% if (public_type == 1) %} 
+        $("#public_desc").show();
+        $("#form_expired").hide();
+    {%else%}
+        $("#public_desc").hide();
+        $("#form_expired").show();  
+    {%endif%}
+
+    {% if (key_type == 1) %}       
+        $("#keys").show();  
+    {%else%}
+        $("#keys").hide();
+    {%endif%}
+
+    $(document).ready(function () {
+        $("#switch-public-enable").on('click', function(){
+            $("#public_desc").show();
+            $("#form_expired").hide();
+        });
+        $("#switch-public-disable").on('click', function(){
+            $("#public_desc").hide();
+            $("#form_expired").show();
+        });
+        $('#switch-public').on('switchChange.bootstrapSwitch', function (event, state) {
+            if ($('#switch-key').is(':checked')) {
+                $('#switch-key').bootstrapSwitch('state', false);
+            }
+
+            if ($('#switch-public').is(':checked')) {
+                $('#public_desc').css('display', 'block');
+                $('#form_expired').css('display', 'none');
+            } else {
+                $('#public_desc').css('display', 'none');
+                $('#form_expired').css('display', 'block');
+            }
+        });
+
+       
+        
+        
+        $("#switch-key-enable").on('click', function(){
+            $("#keys").show();
+        });
+        $("#switch-key-disable").on('click', function(){
+            $("#keys").hide();
+        });
+        $('#switch-key').on('switchChange.bootstrapSwitch', function (event, state) {
+            if ($('#switch-key').is(':checked')) {
+                $('#keys').css('display', 'block');
+                $('#switch-public').bootstrapSwitch('state', false);
+                $('#switch-key').bootstrapSwitch('state', true);
+            } else {
+                $('#keys').css('display', 'none')
+            }
+        });
+
+        $("#language").children().children().first().click();
+        $("#description").children().children().first().click();
+
+        $('body').on('click', '#AddSerialKeysWithFile', function (e) {
+            if (!window.File || !window.FileReader || !window.FileList || !window.Blob) {
+                alert('The File APIs are not fully supported in this browser.');
+                return;
+            }
+
+            var input = document.getElementById('fileinput');
+            if (!input) {
+                alert("Um, couldn't find the fileinput element.");
+            }
+            else if (!input.files) {
+                alert("This browser doesn't seem to support the `files` property of file inputs.");
+            }
+            else if (!input.files[0]) {
+                alert("Please select a file before clicking 'Load'");
+            }
+            else {
+                file = input.files[0];
+                fr = new FileReader();
+                fr.onload = receivedText;
+                fr.readAsText(file);
+                fr.readAsDataURL(file);
+            }
+        });
+        function receivedText() {
+            if ($.trim($('#serialKeyFile').val().split('.')[1]) != 'txt') {
+                $.notify({
+                    icon: '{{ icon_admin }}',
+                    title: '{{ heading_title_main }}',
+                    message: '{{ entry_error }}: {{ text_error_file }}'
+                }, {
+                    type: 'minimalist',
+                    animate: {
+                        enter: 'animated fadeInUp',
+                        exit: 'animated fadeOutRight'
+                    },
+                    placement: {
+                        from: "bottom",
+                        align: "right"
+                    },
+                    delay: 2000,
+                    icon_type: 'image',
+                    template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
+                    '<img data-notify="icon" class="img-circle pull-left">' +
+                    '<span data-notify="title">{1}</span>' +
+                    '<span data-notify="message" style="font-size: large;">{2}</span>' +
+                    '</div>'
+                });
+            } else {
+                if (confirm("Did you check and sure you want to add serial keys with this file?")) {
+
+                    $.ajax({
+                        url: '{{ add_serial_key_with_file_link }}',
+                        type: 'post',
+                        data: 'fileText=' + fr.result,
+                        dataType: 'json',
+                        beforeSend: function () {
+                            $('.container-fluid').fadeTo('slow', 0.5);
+                        },
+                        complete: function () {
+                            $('.container-fluid').fadeTo('slow', 1);
+                        },
+                        success: function (json) {
+
+                            if ($('#no_keys').length) {
+                                $('#no_keys').remove();
+                            }
+
+                            jQuery.each(json, function (index, item) {
+                                $("#ser-table").find('tbody')
+                                    .append($('<tr>')
+                                        .append($('<td>')
+                                            .append($('<div class="input-group"><input class="form-control" id="serialKey" type="text" value="' + item + '" name="serial_keys_new[]">' +
+                                                '<span class="input-group-btn">' +
+                                                '<button class="btn btn-danger btn-sm editablebt" id="removeKeyButtonNew"  type="button"><i class="far fa-trash-alt"></i></button>' +
+                                                '</span>' +
+                                                '</div>')
+                                            )
+                                        )
+                                    );
+                            });
+                            $('#serialKeyFile').val('');
+                            $.notify({
+                                icon: '{{ icon_admin }}',
+                                title: '{{ heading_title_main }}',
+                                message: '{{ entry_success }}: {{ text_success_add_keys }}'
+                            }, {
+                                type: 'minimalist',
+                                animate: {
+                                    enter: 'animated fadeInUp',
+                                    exit: 'animated fadeOutRight'
+                                },
+                                placement: {
+                                    from: "bottom",
+                                    align: "right"
+                                },
+                                delay: 2000,
+                                icon_type: 'image',
+                                template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
+                                '<img data-notify="icon" class="img-circle pull-left">' +
+                                '<span data-notify="title">{1}</span>' +
+                                '<span data-notify="message" style="font-size: large;">{2}</span>' +
+                                '</div>'
+                            });
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+
+                        }
+                    });
+                }
+            }
+        }
+
+        $(document).on('change', ':file', function () {
+            var input = $(this),
+                numFiles = input.get(0).files ? input.get(0).files.length : 1,
+                label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+            input.trigger('fileselect', [numFiles, label]);
+        });
+        $(':file').on('fileselect', function (event, numFiles, label) {
+            $('#AddSerialKeysWithFile').css('display', 'inline-block');
+            $('#serialKeyFile').val(label);
+            $.notify({
+                icon: '{{ icon_admin }}',
+                title: '{{ heading_title_main }}',
+                message: '{{ entry_note }}: {{ text_note_file }}'
+            }, {
+                type: 'minimalist',
+                animate: {
+                    enter: 'animated fadeInUp',
+                    exit: 'animated fadeOutRight'
+                },
+                placement: {
+                    from: "bottom",
+                    align: "right"
+                },
+                delay: 2000,
+                icon_type: 'image',
+                template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
+                '<img data-notify="icon" class="img-circle pull-left">' +
+                '<span data-notify="title">{1}</span>' +
+                '<span data-notify="message" style="font-size: large;">{2}</span>' +
+                '</div>'
+            });
+        });
+
+
+        $("input[type='image']").click(function () {
+            $("input[id='my_file']").click();
+        });
+
+        $("input[id='my_file']").change(function (e) {
+            var $this = $(this);
+            $this.next().html($this.val().split('\\').pop());
+        });
+
+        function getUrlVars() {
+            var vars = {};
+            var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function (m, key, value) {
+                vars[key] = value;
+            });
+            return vars;
+        }
+
+        $('body').on('click', '#AddSerialKey', function (e) {
+            var serialKey = $('#oneDownloadSerialKey').val();
+
+            if($('#oneDownloadSerialKey').val() != ''){
+                if ($('#no_keys').length) {
+                    $('#no_keys').remove();
+                }
+                $('.container-fluid').fadeTo('slow', 0.5);
+                $('.container-fluid').fadeTo('slow', 1);
+                $("#ser-table").find('tbody')
+                    .append($('<tr>')
+                        .append($('<td>')
+                            .append($('<div class="input-group"><input class="form-control" id="serialKey" type="text" value="' + $('#oneDownloadSerialKey').val() + '" name="serial_keys_new[]">' +
+                                '<span class="input-group-btn">' +
+                                '<button class="btn btn-danger btn-sm editablebt" id="removeKeyButtonNew"  type="button"><i class="far fa-trash-alt"></i></button>' +
+                                '</span>' +
+                                '</div>')
+                            )
+                        )
+                    );
+                $('#oneDownloadSerialKey').val('');
+
+                $.notify({
+                    icon: '{{ icon_admin }}',
+                    title: '{{ heading_title_main }}',
+                    message: '{{ entry_success }}: {{ text_success_add_key }}'
+                }, {
+                    type: 'minimalist',
+                    animate: {
+                        enter: 'animated fadeInUp',
+                        exit: 'animated fadeOutRight'
+                    },
+                    placement: {
+                        from: "bottom",
+                        align: "right"
+                    },
+                    delay: 2000,
+                    icon_type: 'image',
+                    template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
+                    '<img data-notify="icon" class="img-circle pull-left">' +
+                    '<span data-notify="title">{1}</span>' +
+                    '<span data-notify="message" style="font-size: large;">{2}</span>' +
+                    '</div>'
+                });
+            } else {
+                $.notify({
+                    icon: '{{ icon_admin }}',
+                    title: '{{ heading_title_main }}',
+                    message: '{{ entry_error }}: {{ text_error_key }}'
+                }, {
+                    type: 'minimalist',
+                    animate: {
+                        enter: 'animated fadeInUp',
+                        exit: 'animated fadeOutRight'
+                    },
+                    placement: {
+                        from: "bottom",
+                        align: "right"
+                    },
+                    delay: 2000,
+                    icon_type: 'image',
+                    template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
+                    '<img data-notify="icon" class="img-circle pull-left">' +
+                    '<span data-notify="title">{1}</span>' +
+                    '<span data-notify="message" style="font-size: large;">{2}</span>' +
+                    '</div>'
+                });
+            }
+
+        });
+
+        $(document).on('click', '.rembt', function (e) {
+            var download_serial = $(e.currentTarget).attr('data-download-serial');
+            var tbody = $("#ser-table tbody");
+            var stbody = $("#ser-sold-table tbody");
+            if (confirm("Are you sure you want to remove serial key?")) {
+                $.ajax({
+                    url: '{{ remove_serial_key_link }}',
+                    type: 'post',
+                    data: 'download_serial=' + download_serial,
+                    dataType: 'json',
+                    beforeSend: function () {
+                        $('.container-fluid').fadeTo('slow', 0.5);
+                    },
+                    complete: function () {
+                        $('.container-fluid').fadeTo('slow', 1);
+                    },
+                    success: function (json) {
+                        $('#tr-' + download_serial).remove();
+                        if (tbody.children().length == 0) {
+                            $("#ser-table").find('tbody')
+                                .append($('<tr id="no_keys" class="text-center">')
+                                    .append($('<td>')
+                                        .append($('<span class="label label-danger">{{ text_no_keys }}</span>')
+                                        )
+                                    )
+                                );
+                        }
+
+                        if (stbody.children().length == 0) {
+                            $("#ser-sold-table").find('tbody')
+                                .append($('<tr id="no_sold_keys" class="text-center">')
+                                    .append($('<td>')
+                                        .append($('<span class="label label-danger">{{ text_no_sold_keys }}</span>')
+                                        )
+                                    )
+                                );
+                        }
+                        $.notify({
+                            icon: '{{ icon_admin }}',
+                            title: '{{ heading_title_main }}',
+                            message: '{{ entry_success }}: {{ text_success_remove_key }}'
+                        }, {
+                            type: 'minimalist',
+                            animate: {
+                                enter: 'animated fadeInUp',
+                                exit: 'animated fadeOutRight'
+                            },
+                            placement: {
+                                from: "bottom",
+                                align: "right"
+                            },
+                            delay: 2000,
+                            icon_type: 'image',
+                            template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
+                            '<img data-notify="icon" class="img-circle pull-left">' +
+                            '<span data-notify="title">{1}</span>' +
+                            '<span data-notify="message" style="font-size: large;">{2}</span>' +
+                            '</div>'
+                        });
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+
+                    }
+                });
+            }
+
+        });
+
+        $(document).on('click', '#removeKeyButtonNew', function (e) {
+            var tbody = $("#ser-table tbody");
+
+            if (confirm("Are you sure you want to remove serial key?")) {
+                $('.container-fluid').fadeTo('slow', 0.5);
+                $('.container-fluid').fadeTo('slow', 1);
+                $(this).parent().parent().parent().parent().remove();
+                if (tbody.children().length == 0) {
+                    $("#ser-table").find('tbody')
+                        .append($('<tr id="no_keys" class="text-center">')
+                            .append($('<td>')
+                                .append($('<span class="label label-danger">{{ text_no_keys }}</span>')
+                                )
+                            )
+                        );
+                }
+                $.notify({
+                    icon: '{{ icon_admin }}',
+                    title: '{{ heading_title_main }}',
+                    message: '{{ entry_success }}: {{ text_success_remove_key }}'
+                }, {
+                    type: 'minimalist',
+                    animate: {
+                        enter: 'animated fadeInUp',
+                        exit: 'animated fadeOutRight'
+                    },
+                    placement: {
+                        from: "bottom",
+                        align: "right"
+                    },
+                    delay: 2000,
+                    icon_type: 'image',
+                    template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
+                    '<img data-notify="icon" class="img-circle pull-left">' +
+                    '<span data-notify="title">{1}</span>' +
+                    '<span data-notify="message" style="font-size: large;">{2}</span>' +
+                    '</div>'
+                });
+            }
+
+        });
+
+        $(document).on('click', '.editbt', function (e) {
+            var download_serial = $(e.currentTarget).attr('data-download-serial');
+            var serial_key = $('#serialKey_' + download_serial).val();
+
+            $.ajax({
+                url: '{{ edit_serial_key_link }}',
+                type: 'post',
+                data: 'download_serial=' + download_serial + '&serial_key=' + serial_key,
+                dataType: 'json',
+                beforeSend: function () {
+                    $('.container-fluid').fadeTo('slow', 0.5);
+                },
+                complete: function () {
+                    $('.container-fluid').fadeTo('slow', 1);
+                },
+                success: function (json) {
+
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+
+                }
+            });
+        });
+
+        //checkbox
+        $(".switcher[type='checkbox']").bootstrapSwitch({
+            'onColor': 'success',
+            'onText': '{{ text_yes }}',
+            'offText': '{{ text_no }}',
+            'onSwitchChange': function (event, state) {
+                if (event.target.name == 'setting[limit_block]' && state == true) {
+                    $('.switcher[name=\'setting[limit_height]\']').bootstrapSwitch({'state': 'false'});
+                }
+                if (event.target.name == 'setting[limit_height]' && state == true) {
+                    $('.switcher[name=\'setting[limit_height]\']').bootstrapSwitch({'state': 'false'});
+                }
+            }
+        });
+    });
+</script>

@@ -1,0 +1,121 @@
+<div class="row mb-3" id="pane">
+    <div class="panel-heading">
+        <h3 class="panel-title"><i class="fa fa-download"></i>Downloads in order</h3>
+    </div>
+    <div class="row-cols-1 row-cols-sm-1 row-cols-md-3 row-cols-xl-3">
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <td class="text-left">Download</td>
+                <td class="text-left">Product</td>
+                <td class="text-left">Download Period</td>
+                <td class="text-left" style="text-align: center">Action</td>
+            </tr>
+            </thead>
+            <tbody>
+            {% for product in d_products %}
+                {% for download in product.downloads %}
+                    <tr>
+                    <td><i class="fa fa-download" aria-hidden="true"></i> {{ download.name }}</td>
+                    <td><a href="{{ product.product_href }}">{{ product.product_name }}</a></td>
+                    <td>
+                        <div class="input-group date" data-provide="datepicker">
+                            <span class="input-group-text"><i class="fa fa-calendar" aria-hidden="true"></i></span>
+                            <input type="text" placeholder="{{ text_date_insert }}"
+                                   class="form-control datepicker date"
+                                   name="days[{{ download.download_id }}]"
+                                   id="datepicker_{{ download.id }}"
+                                   value="{{ download.date_expire }}">
+                            <span class="input-group-btn">
+                            <button id="SaveDate" class="btn btn-primary btn-sm"
+                            data-download-id="{{ download.id }}"type="button" style="width: 80px;height: 36px;">
+                             <i class="fa fa-save" aria-hidden="true"></i></button>
+                                <button id="ResetDate" class="btn btn-danger btn-sm"
+                                type="button"
+                                data-download-reset-id="{{ download.id }}"
+                                style="
+    width: 80px;
+    height: 36px;
+">
+                            <i class="fas fa-sync"></i></i></button></span>
+                        </div>
+                    </td>
+                    <td class="text-center"><a href="{{ download.href }}" data-toggle="tooltip" title="Edit"
+                                                      class="btn btn-primary"><i class="fas fa-pencil-alt"></i></a></td>
+                {% endfor %}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        $(".daterangepicker").eq(0).remove();
+    });
+
+        $('.date').daterangepicker({
+            singleDatePicker: true,
+            autoApply: true,
+            locale: {
+                format: 'YYYY-MM-DD'
+            }
+        });
+
+
+    $('body').on('click', '#SaveDate', function (e) {
+        var downloadID = $(e.currentTarget).attr('data-download-id');
+        var date = $('#datepicker_' + downloadID).val();
+        var url = new URL(window.location.href);
+        var orderID = url.searchParams.get("order_id");
+        $.ajax({
+            url: '{{ set_expire_date_link }}',
+            type: 'post',
+            data: 'download_id=' + downloadID + '&downloadDate=' + date + '&order_id=' + orderID,
+            dataType: 'json',
+            beforeSend: function () {
+                $('#pane').fadeTo('slow', 0.5);
+            },
+            complete: function () {
+                $('#pane').fadeTo('slow', 1);
+            },
+            success: function (json) {
+console.log(json);
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+            }
+        });
+    });
+
+    $('body').on('click', '#ResetDate', function (e) {
+        var downloadID = $(e.currentTarget).attr('data-download-reset-id');
+        var url = new URL(window.location.href);
+        var orderID = url.searchParams.get("order_id");
+
+        $.ajax({
+            url: '{{ reset_expire_date_link }}',
+            type: 'post',
+            data: 'download_id=' + downloadID + '&order_id=' + orderID,
+            dataType: 'json',
+            beforeSend: function () {
+                $('#pane').fadeTo('slow', 0.5);
+            },
+            complete: function () {
+                $('#pane').fadeTo('slow', 1);
+            },
+            success: function (json) {
+
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                $('#datepicker_' + downloadID).val('');
+                return false;
+            }
+        });
+    });
+
+    $(document).on('click', '#button-history', function (ev) {
+        location.reload();
+    });
+</script>

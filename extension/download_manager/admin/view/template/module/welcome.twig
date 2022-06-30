@@ -1,0 +1,430 @@
+{{ header }}{{ column_left }}
+<div id="content">
+    <div class="page-header">
+        <div class="container-fluid">
+
+            <h1>{{ heading_title }} {{ version }}</h1>
+            <ul class="breadcrumb">
+                {% for breadcrumb in breadcrumbs %}
+                    <li class="breadcrumb-item"><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="container-fluid">
+        {% if error_warning %}
+            <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{ error_warning }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endif %}
+        {% if (success) %}
+            <div class="alert alert-success"><i class="fa fa-exclamation-circle"></i> {{ success_setup }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endif %}
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title"><i class="fas fa-pencil-alt"></i> {{ text_edit_module }}</h3>
+            </div>
+            <div class="panel-body">
+                {{ text_setup }}
+            </div>
+        </div>
+    </div>
+    <style>
+        table, th, td {
+            background-color: transparent !important;
+        }
+
+        .dma:hover {
+            color: red !important;
+        }
+
+        .alert-minimalist {
+            background-color: rgb(241, 242, 240);
+            border-color: rgba(149, 149, 149, 0.3);
+            border-radius: 3px;
+            color: rgb(149, 149, 149);
+            padding: 10px;
+        }
+
+        .alert-minimalist > [data-notify="icon"] {
+            height: 50px;
+            margin-right: 12px;
+        }
+
+        .alert-minimalist > [data-notify="title"] {
+            color: rgb(51, 51, 51);
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .alert-minimalist > [data-notify="message"] {
+            font-size: 80%;
+        }
+
+        #chartAn {
+            padding-bottom: 10px;
+        }
+
+        #myModal {
+            background: rgba(0,0,0,0.6) !important;
+            padding: 30px;
+            box-shadow: inset 0 0 30px 0 rgba(0,0,0,0.5) !important;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
+    <script type="text/javascript">
+        $("#input_color").on('change', function () {
+            $("#button_type").attr('class', 'btn btn-' + $(this).find("option:selected").val());
+        });
+
+        $("#input_icon").on('change', function () {
+            $("#ddm_icon").attr('class', $("#input_icon").val());
+        });
+        $("#input_recolor").on('change', function () {
+            $("#rebutton_type").attr('class', 'btn btn-' + $(this).find("option:selected").val());
+        });
+
+        $("#input_reicon").on('change', function () {
+            $("#ddm_reicon").attr('class', $("#input_reicon").val());
+        });
+        $("#input_add_color").on('change', function () {
+            $("#add-button_type").attr('class', 'btn btn-' + $(this).find("option:selected").val());
+            $("#addbutton_type").attr('class', 'btn btn-' + $(this).find("option:selected").val());
+        });
+        $("#input_close_color").on('change', function () {
+            $("#cls-button").attr('class', 'btn btn-' + $(this).find("option:selected").val());
+        });
+
+        $("#input_add_icon").on('change', function () {
+            $("#ddm_add-icon").attr('class', $("#input_add_icon").val());
+            $("#ddm_addicon").attr('class', $("#input_add_icon").val());
+        });
+
+        $(document).ready(function () {
+            $("#modal-bg-color-pick").change(function () {
+                $("#modal-body").css('background-color', $("#modal-bg-color-pick").val());
+            });
+            $("#modal-hd-color-pick").change(function () {
+                $("#modal-header").css('background-color', $("#modal-hd-color-pick").val());
+            });
+            $("#modal-ft-color-pick").change(function () {
+                $("#modal-footer").css('background-color', $("#modal-ft-color-pick").val());
+            });
+            $("#close-button-color-pick").change(function () {
+                $("#cls-button").css('background-color', $("#close-button-color-pick").val());
+            });
+            $("#modal-tl-tx-color-pick").change(function () {
+                $("#modal-tl").css('color', $("#modal-tl-tx-color-pick").val());
+            });
+            $("#modal-bd-tx-color-pick").change(function () {
+                $("#modal-body").css('color', $("#modal-bd-tx-color-pick").val());
+            });
+            $("#modal-cls-bt-tx-color-pick").change(function () {
+                $("#cls-button").css('color', $("#modal-cls-bt-tx-color-pick").val());
+            });
+        });
+
+
+    </script>
+    <script>
+        $(function () {
+            $('.color-picker').colorpicker();
+        });
+    </script>
+    <script type="text/javascript">
+        var tour = new Tour({
+            steps: [
+                {
+                    element: "#tab_analytics",
+                    title: "{{ text_analytics }}",
+                    content: "{{ tour_analytic_content_tab }}",
+                    onNext: function (tour) {
+                        $("#tab_download").tab('show');
+                        $('#tab_analytic').removeClass("active");
+                        $('#tab_download').addClass("active");
+                        $("div.tab-pane:nth-child(1)").removeClass("active");
+                        $("div.tab-pane:nth-child(2)").addClass("active");
+                    }
+                },
+                {
+                    element: "#tab_download",
+                    title: "{{ text_downloads }}",
+                    content: "{{ tour_downloads_content_tab }}",
+                    onPrev: function (tour) {
+                        $("#tab_analytic").tab('show');
+                        $('#tab_download').removeClass("active");
+                        $('#tab_analytics').addClass("active");
+                        $("div.tab-pane:nth-child(2)").removeClass("active");
+                        $("div.tab-pane:nth-child(1)").addClass("active");
+                    }
+                },
+                {
+                    placement: "top",
+                    element: '#table_download',
+                    title: '{{ text_downloads }}',
+                    content: '{{ tour_downloads_content_table }}',
+                    onNext: function (tour) {
+                        $("#tab_orders").tab('show');
+                        $('#tab_download').removeClass("active");
+                        $('#tab_order').addClass("active");
+                        $("div.tab-pane:nth-child(2)").removeClass("active");
+                        $("div.tab-pane:nth-child(3)").addClass("active");
+                    }
+                },
+                {
+                    element: "#tab_order",
+                    title: "{{ text_orders }}",
+                    content: "{{ tour_orders_content_tab }}",
+                    onPrev: function (tour) {
+                        $("#tab_downloads").tab('show');
+                        $('#tab_order').removeClass("active");
+                        $('#tab_download').addClass("active");
+                        $("div.tab-pane:nth-child(3)").removeClass("active");
+                        $("div.tab-pane:nth-child(2)").addClass("active");
+                    }
+                },
+                {
+                    placement: "top",
+                    element: "#table_order",
+                    title: "{{ text_orders }}",
+                    content: "{{ tour_orders_content_table }}",
+                    onNext: function (tour) {
+                        $("#tab_products").tab('show');
+                        $('#tab_order').removeClass("active");
+                        $('#tab_products_view').addClass("active");
+                        $("div.tab-pane:nth-child(3)").removeClass("active");
+                        $("div.tab-pane:nth-child(4)").addClass("active");
+                    }
+                },
+                {
+                    element: "#tab_products_view",
+                    title: "{{ text_products }}",
+                    content: "{{ tour_products_content_tab }}",
+                    onPrev: function (tour) {
+                        $("#tab_order").tab('show');
+                        $('#tab_products_view').removeClass("active");
+                        $('#tab_order').addClass("active");
+                        $("div.tab-pane:nth-child(4)").removeClass("active");
+                        $("div.tab-pane:nth-child(3)").addClass("active");
+                    }
+                },
+                {
+                    placement: "top",
+                    element: "#table_product",
+                    title: "{{ text_products }}",
+                    content: "{{ tour_products_content_table }}",
+                    onNext: function (tour) {
+                        $("#tab_settings").tab('show');
+                        $('#tab_products_view').removeClass("active");
+                        $('#tab_setting').addClass("active");
+                        $("div.tab-pane:nth-child(4)").removeClass("active");
+                        $("div.tab-pane:nth-child(5)").addClass("active");
+                    }
+                },
+                {
+                    element: "#tab_setting",
+                    title: "{{ text_settings }}",
+                    content: "{{ tour_settings_content_tab }}",
+                    onPrev: function (tour) {
+                        $("#tab_products").tab('show');
+                        $('#tab_setting').removeClass("active");
+                        $('#tab_products_view').addClass("active");
+                        $("div.tab-pane:nth-child(5)").removeClass("active");
+                        $("div.tab-pane:nth-child(4)").addClass("active");
+                    }
+                },
+                {
+                    placement: "top",
+                    element: '#status',
+                    title: '{{ entry_status }}',
+                    content: '{{ tour_settings_status }}'
+                },
+                {
+                    placement: "top",
+                    element: '#reorder',
+                    title: '{{ entry_reorder_button }}',
+                    content: "{{ help_reorder }}"
+                },
+                {
+                    placement: "top",
+                    element: '#def_period',
+                    title: '{{ text_default_download_days }}',
+                    content: '{{ tour_settings_period }}'
+                },
+                {
+                    placement: "top",
+                    element: '#fileType',
+                    title: '{{ entry_file_ext_allowed }}',
+                    content: '{{ help_file_ext_allowed }}'
+                },
+                {
+                    placement: "top",
+                    element: '#fileMime',
+                    title: '{{ entry_file_mime_allowed }}',
+                    content: '{{ help_file_mime_allowed }}'
+                },
+                {
+                    placement: "top",
+                    element: '#ticket',
+                    title: '{{ tour_support_title }}',
+                    content: '{{ tour_settings_support }}',
+                    onNext: function (tour) {
+                        $("#tab_designs").tab('show');
+                        $('#tab_setting').removeClass("active");
+                        $('#tab_design').addClass("active");
+                        $("div.tab-pane:nth-child(5)").removeClass("active");
+                        $("div.tab-pane:nth-child(6)").addClass("active");
+                    }
+                },
+                {
+                    element: "#tab_design",
+                    title: "{{ text_design }}",
+                    content: "{{ tour_manual_design_tab }}",
+                    onPrev: function (tour) {
+                        $("#tab_settings").tab('show');
+                        $('#tab_design').removeClass("active");
+                        $('#tab_setting').addClass("active");
+                        $("div.tab-pane:nth-child(6)").removeClass("active");
+                        $("div.tab-pane:nth-child(5)").addClass("active");
+                    }
+                },
+                {
+                    placement: "top",
+                    element: '#exp-notification',
+                    title: '{{ entry_notification }}',
+                    content: '{{ help_notification }}'
+                },
+                {
+                    placement: "top",
+                    element: '#re-order-notification',
+                    title: '{{ entry_reorder_note }}',
+                    content: "{{ help_reorder_note }}"
+                },
+                {
+                    placement: "top",
+                    element: '#re-order-wording',
+                    title: '{{ entry_reorder_wording }}',
+                    content: '{{ help_reorder_wording }}'
+                },
+                {
+                    placement: "top",
+                    element: '#download-button',
+                    title: '{{ text_button_design }}',
+                    content: '{{ help_button_design }}'
+                },
+                {
+                    placement: "top",
+                    element: '#re-order-button',
+                    title: '{{ entry_rebutton_design }}',
+                    content: '{{ help_rebutton_design }}'
+                },
+                {
+                    placement: "top",
+                    element: '#add-to-button',
+                    title: '{{ entry_add_button_design }}',
+                    content: '{{ help_add_button_design }}'
+                },
+                {
+                    placement: "top",
+                    element: '#custom-style',
+                    title: '{{ entry_custom_style }}',
+                    content: "{{ help_custom }}",
+                    onNext: function (tour) {
+                        $("#tab_instruction").tab('show');
+                        $('#tab_design').removeClass("active");
+                        $('#tab_instructions').addClass("active");
+                        $("div.tab-pane:nth-child(6)").removeClass("active");
+                        $("div.tab-pane:nth-child(7)").addClass("active");
+                    }
+                },
+                {
+                    element: "#tab_instructions",
+                    title: "{{ text_instruction }}",
+                    content: "{{ tour_manual_content_tab }}",
+                    onPrev: function (tour) {
+                        $("#tab_designs").tab('show');
+                        $('#tab_instructions').removeClass("active");
+                        $('#tab_design').addClass("active");
+                        $("div.tab-pane:nth-child(7)").removeClass("active");
+                        $("div.tab-pane:nth-child(6)").addClass("active");
+                    }
+                }
+            ],
+            container: "body",
+            smartPlacement: true,
+            keyboard: true,
+            storage: window.localStorage,
+            debug: false,
+            backdrop: true,
+            backdropContainer: 'body',
+            backdropPadding: 0,
+            redirect: true,
+            orphan: false,
+            duration: false,
+            delay: false
+        });
+
+        // Initialize the tour
+        tour.init();
+        {% if tour == 1 %}
+        tour.restart();
+        {% endif %}
+    </script>
+
+    <script type="text/javascript">
+
+        $(document).on('click', '.setup', function () {
+            window.location.href = '{{ setup_link }}';
+        });
+
+        $('body').on('click', '#save_and_stay', function () {
+            $.ajax({
+                type: 'post',
+                url: $('#form').attr('action'),
+                data: $('#form').serialize(),
+                dataType: 'json',
+                beforeSend: function () {
+                    $('#content').fadeTo('slow', 0.5);
+                },
+                complete: function () {
+                    $('#content').fadeTo('slow', 1);
+                },
+                success: function (json) {
+
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    $.notify({
+                        icon: 'view/image/d_download_manager_pro/logo.png',
+                        title: '{{ heading_title_main }}',
+                        message: '{{ entry_success }}: {{ text_success_save }}'
+                    }, {
+                        type: 'minimalist',
+                        animate: {
+                            enter: 'animated fadeInUp',
+                            exit: 'animated fadeOutRight'
+                        },
+                        placement: {
+                            from: "bottom",
+                            align: "right"
+                        },
+                        delay: 2000,
+                        icon_type: 'image',
+                        template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
+                        '<img data-notify="icon" class="img-circle pull-left">' +
+                        '<span data-notify="title">{1}</span>' +
+                        '<span data-notify="message" style="font-size: large;">{2}</span>' +
+                        '</div>'
+                    });
+                }
+            });
+        });
+
+    </script>
+
+</div>
+{{ footer }}

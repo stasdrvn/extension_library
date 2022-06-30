@@ -1,0 +1,1625 @@
+{{ header }}{{ column_left }}
+<div id="content">
+    <div class="page-header">
+        <div class="container-fluid">
+            {% if setup %}
+                <div class="float-end">
+                    <a href="{{ add_download_link }}" data-toggle="tooltip" title="{{ text_add_download }}"
+                       class="btn btn-primary"><i
+                                class="fa fa-plus"></i></a>
+                    <button id="removeDownload" data-toggle="tooltip" title="{{ text_remove_download }}"
+                            class="btn btn-danger"><i class="fa fa-trash"></i></button>
+                    <button id="save_and_stay" data-toggle="tooltip" title="{{ text_save_and_stay }}"
+                            class="btn btn-success"><i class="fa fa-save"></i></button>
+                    <button type="submit" id="save_and_quit" form="form" data-toggle="tooltip" title="{{ text_save }}"
+                            class="btn btn-primary"><i class="fa fa-save"></i></button>
+                    <a href="{{ cancel }}" data-toggle="tooltip" title="{{ text_cancel }}" class="btn btn-default"><i
+                                class="fa fa-reply"></i></a></div>
+            {% endif %}
+            <h1>{{ heading_title }} {{ version }}</h1>
+            <ul class="breadcrumb">
+                {% for breadcrumb in breadcrumbs %}
+                    <li class="breadcrumb-item"><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="container-fluid">
+        {% if error_warning %}
+            <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{ error_warning }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endif %}
+        {% if (success) %}
+            <div class="alert alert-success"><i class="fa fa-exclamation-circle"></i> {{ success_setup }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endif %}
+        {% if setup %}
+            {% if d_shopunity %}
+                <div class="d_shopunity_update"></div>
+                <script src="view/javascript/d_shopunity/d_shopunity_widget.js" type="text/javascript"></script>
+                <script type="text/javascript">
+                    var d_shopunity_update = jQuery.extend(true, {}, d_shopunity_widget);
+                    d_shopunity_update.init({
+                        class: '.d_shopunity_update',
+                        token: '{{ widget_token }}',
+                        extension_id: 'd_download_manager_pro',
+                        action: 'loadUpdate'
+                    })
+                </script>
+            {% endif %}
+        {% endif %}
+        <div class="card">
+            <div class="card-header">
+                <h3 class="panel-title"><i class="fas fa-pencil-alt"></i> {{ text_edit_module }}</h3>
+            </div>
+            <div class="card-body">
+                {% if setup %}
+                    <ul class="nav nav-tabs">
+                        <li id="tab_analytics" class="active">
+                            <a href="#tab_analytic" data-bs-toggle="tab" class="nav-link active"><span
+                                        class="fa fa-bar-chart"></span> {{ text_analytics }}</a>
+                        </li>
+                        <li id="tab_download">
+                            <a href="#tab_downloads" data-bs-toggle="tab" class="nav-link"><span
+                                        class="fa fa-download"></span> {{ text_downloads }}</a>
+                        </li>
+                        <li id="tab_order">
+                            <a href="#tab_orders" data-bs-toggle="tab" class="nav-link"><span
+                                        class="fa fa-shopping-cart"></span> {{ text_orders }}
+                            </a>
+                        </li>
+                        <li id="tab_products_view">
+                            <a href="#tab_products" data-bs-toggle="tab" class="nav-link"><span
+                                        class="fa fa-tag"></span> {{ text_products }}</a>
+                        </li>
+                        <li id="tab_setting">
+                            <a href="#tab_settings" data-bs-toggle="tab" class="nav-link"><span
+                                        class="fa fa-cog"></span> {{ text_settings }}</a>
+                        </li>
+                        <li id="tab_design">
+                            <a href="#tab_designs" data-bs-toggle="tab" class="nav-link"><span
+                                        class="fa fa-paint-brush"></span> {{ text_design }}</a>
+                        </li>
+                        <li id="tab_instructions">
+                            <a href="#tab_instruction" data-bs-toggle="tab" class="nav-link"><span
+                                        class="fa fa-graduation-cap"></span> {{ text_instruction }}</a>
+                        </li>
+                    </ul>
+                    <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form"
+                          class="form-horizontal">
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="tab_analytic">
+                                <div class="tab-body">
+                                    <p></p>
+                                    {% if analytics %}
+                                        <div class="col-sm-12" id="chartAn">
+                                            <canvas id="myChart" width="600" height="400"></canvas>
+                                        </div>
+                                    {% endif %}
+                                    <table class="table table-resposive table-bordered" id="table_analytic">
+                                        <thead>
+                                        <tr>
+                                            <td>{{ entry_download_id }}</td>
+                                            <td>{{ entry_download_name }}</td>
+                                            <td>{{ entry_mask }}</td>
+                                            <td>{{ entry_downloaded_times }}</td>
+                                            <td>{{ text_comment }}</td>
+                                            <td>{{ entry_action }}</td>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% if analytics %}
+                                            {% for analytic in analytics %}
+                                                <tr id="tra{{ analytic.download_id }}">
+                                                    <td>{{ analytic.download_id }}</td>
+                                                    <td><a class="dma" href="{{ analytic.downloadHref }}"
+                                                           target="_blank"><i class="fa fa-download"
+                                                                              aria-hidden="true"></i> {{ analytic.name }}
+                                                        </a></td>
+                                                    <td>{{ analytic.mask }}</td>
+                                                    <td class="text-center">{{ analytic.download_times }}</td>
+                                                    <td>
+                                                        <div class="input-group">
+                                                            <input type="text" placeholder="{{ text_comment }}"
+                                                                   class="form-control" min="-1"
+                                                                   id="downloadComment_{{ analytic.download_id }}"
+                                                                   value="{{ analytic.comment }}">
+                                                            <span class="input-group-btn">
+                                                                <button id="SaveDownloadComment"
+                                                                        class="btn btn-primary btn-sm" type="button"
+                                                                        data-toggle="tooltip"
+                                                                        data-original-title="{{ text_save }}"
+                                                                        data-download-id="{{ analytic.download_id }}">
+                                                                    <i class="fa fa-save" aria-hidden="true"></i>
+                                                                </button>
+                                                    </span>
+                                                        </div>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <button id="ClearHistory"
+                                                                class="btn btn-default btn-lg" type="button"
+                                                                data-toggle="tooltip"
+                                                                data-original-title="{{ text_clear }}"
+                                                                data-download-id="{{ analytic.download_id }}">
+                                                            <i class="fa fa-trash-o"
+                                                               aria-hidden="true"></i>{{ entry_clear }}
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        {% else %}
+                                            <tr>
+                                                <td align="center" colspan="10">
+                                                    {{ text_no_analytic_data }}
+                                                </td>
+                                            </tr>
+                                        {% endif %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="tab_downloads">
+                                <div class="tab-body">
+                                    <!--TABLE-->
+                                    <p></p>
+                                    <table class="table table-resposive table-bordered" id="table_download">
+                                        <thead>
+                                        <tr>
+                                            <td style="width: 1px;" class="text-center">
+                                                <input type="checkbox"
+                                                       onclick="$('input[name*=\'selected\']').prop('checked', this.checked);"/>
+                                            </td>
+                                            <td>{{ entry_download_id }}</td>
+                                            <td>{{ entry_download }}</td>
+                                            <td>{{ entry_added_download }}</td>
+                                            <td>{{ entry_prod_in_down }}</td>
+                                            <td>{{ entry_order_with_down }}</td>
+                                            <td>{{ entry_download_type }}</td>
+                                            <td>{{ entry_ability }}</td>
+                                            <td>{{ entry_expired_days }}</td>
+                                            <td>{{ entry_action }}</td>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% if downloads %}
+                                            {% for download in downloads %}
+                                                <tr>
+                                                    <td class="text-center">{% if download.download_id in selected %}
+                                                            <input type="checkbox" name="selected[]"
+                                                                   value="{{ download.download_id }}"
+                                                                   checked="checked"/>
+                                                        {% else %}
+                                                            <input type="checkbox" name="selected[]"
+                                                                   value="{{ download.download_id }}"/>
+                                                        {% endif %}</td>
+                                                    <td>{{ download.download_id }}</td>
+                                                    <td>
+                                                        <i class="fa fa-download"
+                                                           aria-hidden="true"></i> {{ download.name }}
+                                                    </td>
+                                                    <td>{{ download.date_added|date("m/d/Y") }}</td>
+                                                    {% if download.products %}
+                                                        <td class="text-left">
+                                                        {% for d_product in download.products|slice(0,3) %}
+                                                            {% if d_product.product_image %}
+                                                                <a href="{{ d_product.productHref }}"
+                                                                   data-original-title="{{ d_product.name }}"
+                                                                   data-toggle="tooltip">
+                                                                    <img
+                                                                            src="{{ d_product.product_image }}"
+                                                                            alt="{{ d_product.name }}"
+                                                                            class="img-thumbnail"/></a>  {% else %}
+                                                                <span
+                                                                        class="img-thumbnail list"><i
+                                                                            class="fa fa-camera fa-2x"></i></span> {% endif %}
+                                                        {% endfor %}
+                                                        {% if download.view_all is defined %}
+                                                            <a href="{{ download.view_all }}" data-toggle="tooltip"
+                                                               class="btn btn-primary btn-sm"
+                                                               data-original-title="{{ text_view_all }}"
+                                                               id="view_{{ download.download_id }}"
+                                                               style="width: 50px; padding: 17px; height: 50px;"><i
+                                                                        class="fa fa-eye"
+                                                                        style="position: relative;top: calc(50% - 10px);margin-right: 35px;"
+                                                                        aria-hidden="true"></i></a>
+                                                            </td>
+                                                        {% endif %}
+                                                    {% else %}
+                                                        <td class="text-center">
+                                                            {{ text_no_d_products }}
+                                                        </td>
+                                                    {% endif %}
+
+                                                    <td class="text-center">{% if download.orders_with_download %}{{ download.orders_with_download }}{% else %}{{ text_not_defined }}{% endif %}</td>
+                                                    <td class="text-center">{% if download.type %}
+                                                            <span class="label label-primary" data-toggle="tooltip"
+                                                                  title="{{ download.link }}">{{ text_remote }}</span> {% else %}
+                                                            <span class="label label-default" data-toggle="tooltip"
+                                                                  title="{{ text_server_file }}">{{ text_local }}</span>{% endif %}
+                                                        {% if download.key_type %} <span class="label label-warning"
+                                                                                         data-toggle="tooltip"
+                                                                                         title="{{ help_serial }}">
+                                                                Serial</span>{% endif %}
+                                                        {% if download.public_type %} <span class="label label-info"
+                                                                                            data-toggle="tooltip"
+                                                                                            title="Public download">
+                                                                Public</span>{% endif %}
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <input type="hidden"
+                                                               name="download_status[{{ download.download_id }}]"
+                                                               value="0"/>
+                                                        <input type="checkbox" class="form-control switcher"
+                                                               data-label-text="{{ text_enabled }}"
+                                                               name="download_status[{{ download.download_id }}]" {% if download.status == 1 %} checked='checked' {% endif %}
+                                                               value="1"/>
+                                                    </td>
+                                                    <td>
+                                                        <div class="input-group">
+                                                            <span class="input-group-text">{{ text_days }}</span>
+                                                            <input type="number" placeholder="{{ number_of_days }}"
+                                                                   class="form-control" min="-1"
+                                                                   name="days[{{ download.download_id }}]"
+                                                                   id="oneDownloadDays_{{ download.download_id }}"
+                                                                   value="{{ download.download_period }}">
+                                                            <span class="input-group-btn">
+                                                                <button id="SaveDownloadDate"
+                                                                        class="btn btn-primary btn-sm" type="button"
+                                                                        data-toggle="tooltip"
+                                                                        data-original-title="{{ text_save }}"
+                                                                        data-download-id="{{ download.download_id }}">
+                                                                    <i class="fa fa-save" aria-hidden="true"></i>
+                                                                </button>
+                                                                <button id="ResetDownloadDate"
+                                                                        class="btn btn-danger btn-sm"
+                                                                        type="button"
+                                                                        data-toggle="tooltip"
+                                                                        data-original-title="{{ text_download_forever }}"
+                                                                        data-download-reset-id="{{ download.download_id }}">
+                                                                    <i class="fas fa-sync"></i>
+                                                                </button>
+                                                             </span>
+                                                        </div>
+                                                    </td>
+                                                    <input type="hidden"
+                                                           id="download_id_{{ download.download_id }}"
+                                                           value="{{ download.download_id }}">
+                                                    <td class="text-center">
+                                                        <a href="{{ download.downloadHref }}" data-toggle="tooltip"
+                                                           class="btn btn-primary"><i class="fas fa-pencil-alt"></i></a>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        {% else %}
+                                            <tr>
+                                                <td align="center" colspan="10">
+                                                    <a href="{{ add_download_link }}"
+                                                       class="btn btn-primary">{{ text_no_downloads }}</a>
+                                                </td>
+                                            </tr>
+                                        {% endif %}
+                                        </tbody>
+                                    </table>
+                                    <div class="row m-t-lg m-b-lg">
+                                        <div class="col-sm-6 text-left">{{ pagination_downloads }}</div>
+                                        <div class="col-sm-6 text-right">{{ results_downloads }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="tab_orders">
+                                <div class="tab-body">
+                                    <!--TABLE-->
+                                    <p></p>
+                                    <table class="table table-resposive table-bordered" id="table_order">
+                                        <thead>
+                                        <tr>
+                                            <td>{{ entry_customer }}</td>
+                                            <td>{{ entry_order }}</td>
+                                            <td>{{ entry_order_status }}</td>
+                                            <td>{{ entry_added }}</td>
+                                            <td>{{ text_downloads_in_order }}</td>
+                                            <td>{{ entry_ability }}</td>
+                                            <td>{{ entry_action }}</td>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% if orders %}
+                                            {% for order in orders %}
+                                                <tr>
+                                                    <td>
+                                                        <a class="dma" href="{{ order.customerHref }}"
+                                                           target="_blank"><i class="fa fa-user"
+                                                                              aria-hidden="true"></i> {{ order.firstname }} {{ order.lastname }}
+                                                        </a>
+                                                    </td>
+                                                    <td>{{ order.order_id }}</td>
+                                                    <td>{{ order.order_status }}</td>
+                                                    <td>{{ order.date_added|date("m/d/Y") }}</td>
+                                                    <td class="text-center">{% if order.downloads %}<a class="dma"
+                                                                                                       href="{{ order.orderHref }}"
+                                                                                                       target="_blank">{{ order.downloads }}
+                                                            </a> {% else %}{{ text_not_defined }}{% endif %}</td>
+                                                    <td class="text-center">
+                                                        <input type="hidden"
+                                                               name="order_status[{{ order.order_id }}]"
+                                                               value="0"/>
+                                                        <input type="checkbox" class="form-control switcher"
+                                                               data-label-text="{{ text_enabled }}"
+                                                               name="order_status[{{ order.order_id }}]" {% if order.status == 1 %} checked='checked' {% endif %}
+                                                               value="1"/>
+                                                    </td>
+                                                    <input type="hidden" id="order_id_{{ order.order_id }}"
+                                                           value="{{ order.order_id }}">
+                                                    <td class="text-center">
+                                                        <a href="{{ order.orderHref }}" data-toggle="tooltip"
+                                                           class="btn btn-primary"><i class="fas fa-pencil-alt"></i></a>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        {% else %}
+                                            {{ text_no_orders }}
+                                        {% endif %}
+                                        </tbody>
+                                    </table>
+                                    <div class="row m-t-lg m-b-lg">
+                                        <div class="col-sm-6 text-left">{{ pagination_orders }}</div>
+                                        <div class="col-sm-6 text-right">{{ results_orders }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="tab_products">
+                                <div class="tab-body">
+                                    <p></p>
+                                    <table class="table table-resposive table-bordered" id="table_product">
+                                        <thead>
+                                        <tr>
+                                            <td>{{ entry_product_id }}</td>
+                                            <td>{{ entry_product_image }}</td>
+                                            <td>{{ entry_product_name }}</td>
+                                            <td>{{ entry_product_model }}</td>
+                                            <td>{{ entry_product_price }}</td>
+                                            <td>{{ entry_product_downloads }}</td>
+                                            <td>{{ entry_product_status }}</td>
+                                            <td>{{ entry_action }}</td>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% if products %}
+                                            {% for product in products %}
+                                                <tr>
+                                                    <td>{{ product.product_id }}</td>
+                                                    <td class="text-center">{% if product.image %}
+                                                            <img src="{{ product.image }}" alt="{{ product.name }}"
+                                                                 class="img-thumbnail"/> {% else %} <span
+                                                                class="img-thumbnail list"><i
+                                                                    class="fa fa-camera fa-2x"></i></span> {% endif %}
+                                                    </td>
+                                                    <td>{{ product.name }}</td>
+                                                    <td>{{ product.model }}</td>
+                                                    <td>{% if product.special %}
+                                                            <span style="text-decoration: line-through;">{{ product.price }}</span>
+                                                            <br/>
+                                                            <div class="text-danger">{{ product.special }}</div>
+                                                        {% else %}
+                                                            {{ product.price }}
+                                                        {% endif %}</td>
+                                                    <td class="text-left" style="width: 280px;">
+                                                        {% for p_download in product.downloads %}
+                                                            <a href="{{ p_download.downloadHref }}"
+                                                               data-toggle="tooltip" class="btn btn-default btn-sm"
+                                                               data-original-title="{{ p_download.name }}"><i
+                                                                        class="fa fa-download"
+                                                                        aria-hidden="true"></i></a>
+                                                        {% endfor %}
+                                                        {% if product.view_all is defined %}
+                                                            <a href="{{ product.view_all }}" data-toggle="tooltip"
+                                                               class="btn btn-primary btn-sm"
+                                                               data-original-title="{{ text_view_all }}"><i
+                                                                        class="fa fa-eye" aria-hidden="true"></i></a>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td class="text-center">{% if product.status == "Enabled" %}
+                                                            <span class="label label-success">{{ product.status }}</span> {% elseif product.status == "Disabled" %}
+                                                            <span class="label label-danger">{{ product.status }}</span> {% else %}
+                                                            <span class="label label-success">{{ product.status }}</span> {% endif %}
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <a href="{{ product.edit }}" data-toggle="tooltip"
+                                                           class="btn btn-primary"><i class="fas fa-pencil-alt"></i></a>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        {% else %}
+                                            <tr>
+                                                <td align="center" colspan="10">
+                                                    <a href="{{ add_product_link }}"
+                                                       class="btn btn-primary">{{ text_no_product }}</a>
+                                                </td>
+                                            </tr>
+                                        {% endif %}
+                                        </tbody>
+                                    </table>
+                                    <div class="row m-t-lg m-b-lg">
+                                        <div class="col-sm-6 text-left">{{ pagination_products }}</div>
+                                        <div class="col-sm-6 text-right">{{ results_products }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="tab_settings">
+                                <div class="tab-body">
+                                    <div class="row mb-3" id="status">
+                                        <label class="col-sm-2 col-form-label"
+                                               for="input_status"><span data-toggle="tooltip"
+                                                                        title="{{ help_status }}">{{ entry_status }}</span></label>
+
+                                                                        
+                                        <div class="col-sm-4">
+                                            <input type="hidden" name="{{ codename }}_status" value="0"/>
+                                            <input type="checkbox" class="form-control switcher"
+                                                   data-label-text="{{ text_enabled }}"
+                                                   name="{{ codename }}_status" {% if status %} checked='checked' {% endif %}
+                                                   value="1"/>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3" id="reorder">
+                                        <label class="col-sm-2 col-form-label"
+                                               for="input_status"><span data-toggle="tooltip"
+                                                                        title="{{ help_reorder }}">{{ entry_reorder_button }}</span></label>
+                                        <div class="col-sm-4">
+                                            <input type="hidden" name="{{ codename }}_setting[re-order]" value="0"/>
+                                            <input type="checkbox" class="form-control switcher"
+                                                   data-label-text="{{ text_enabled }}"
+                                                   name="{{ codename }}_setting[re-order]" {% if reorder %} checked='checked' {% endif %}
+                                                   value="1"/>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3" id="def_period">
+                                        <label class="col-sm-2 col-form-label"
+                                               for="input_status"><span data-toggle="tooltip"
+                                                                        title="{{ help_default }}">{{ text_default_download_days }}</span></label>
+                                        <div class="col-sm-2">
+                                            <div class="input-group">
+                                                <span class="input-group-text">{{ text_days }}</span>
+                                                <input type="number" placeholder="{{ number_of_days }}"
+                                                       class="form-control"
+                                                       name="{{ codename }}_setting[default_download_days]"
+                                                       id="defaultDownloadDays"
+                                                       value="{{ default_download_days }}">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3" id="fileType">
+                                        <label class="col-sm-2 col-form-label" for="input-file-ext-allowed"><span
+                                                    data-toggle="tooltip"
+                                                    title="{{ help_file_ext_allowed }}">{{ entry_file_ext_allowed }}</span></label>
+                                        <div class="col-sm-10">
+                                            <textarea name="config_file_ext_allowed" rows="5"
+                                                      placeholder="{{ entry_file_ext_allowed }}"
+                                                      id="input-file-ext-allowed"
+                                                      class="form-control">{{ config_file_ext_allowed }}</textarea>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3" id="fileMime">
+                                        <label class="col-sm-2 col-form-label" for="input-file-mime-allowed"><span
+                                                    data-toggle="tooltip"
+                                                    title="{{ help_file_mime_allowed }}">{{ entry_file_mime_allowed }}</span></label>
+                                        <div class="col-sm-10">
+                                            <textarea name="config_file_mime_allowed" rows="5"
+                                                      placeholder="{{ entry_file_mime_allowed }}"
+                                                      id="input-file-mime-allowed"
+                                                      class="form-control">{{ config_file_mime_allowed }}</textarea>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3" id="ticket">
+                                        <label class="col-sm-2 col-form-label"
+                                               for="input_status">{{ entry_ticket }}</label>
+                                        <div class="col-sm-10">
+                                            <br><a class="btn btn-success btn-bg" href="https://dreamvention.ee/support"
+                                                   target="_blank">{{ text_ticket }}</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="tab_designs">
+                                <div class="tab-body">
+                                    <div class="row mb-3" id="exp-notification">
+                                        <label class="col-sm-2 col-form-label"
+                                               for="input_status"><span data-toggle="tooltip"
+                                                                        title="{{ help_notification }}">{{ entry_notification }}</span></label>
+                                        <div class="col-sm-10">
+                                            {% for language in languages %}
+                                                <div class="input-group">
+                                                    <label class="input-group-text" title="{{ language.name }}"><img
+                                                                src="{{ language.flag }}" title="{{ language.name }}"/></label>
+                                                    <input type="text" placeholder="{{ entry_notification }}"
+                                                           class="form-control"
+                                                           name="{{ codename }}_setting[exp_note][{{ language.language_id }}]"
+                                                           id="notification"
+                                                           value="{{ exp_note[language.language_id] }}">
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3" id="re-order-notification">
+                                        <label class="col-sm-2 col-form-label"
+                                               for="input_status"><span data-toggle="tooltip"
+                                                                        title="{{ help_reorder_note }}">{{ entry_reorder_note }}</span></label>
+                                        <div class="col-sm-10">
+                                            {% for language in languages %}
+                                                <div class="input-group">
+                                                    <label class="input-group-text" title="{{ language.name }}"><img
+                                                                src="{{ language.flag }}" title="{{ language.name }}"/></label>
+                                                    <input type="text" placeholder="{{ entry_reorder_note }}"
+                                                           class="form-control"
+                                                           name="{{ codename }}_setting[reorder_note][{{ language.language_id }}]"
+                                                           id="re-order-notification"
+                                                           value="{{ reorder_note[language.language_id] }}">
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3" id="re-order-wording">
+                                        <label class="col-sm-2 col-form-label"
+                                               for="input_status"><span data-toggle="tooltip"
+                                                                        title="{{ help_reorder_wording }}">{{ entry_reorder_wording }}</span></label>
+                                        <div class="col-sm-10">
+                                            {% for language in languages %}
+                                                <div class="input-group">
+                                                    <label class="input-group-text" title="{{ language.name }}"><img
+                                                                src="{{ language.flag }}" title="{{ language.name }}"/></label>
+                                                    <input type="text" placeholder="{{ entry_reorder_wording }}"
+                                                           class="form-control"
+                                                           name="{{ codename }}_setting[reorder_wording][{{ language.language_id }}]"
+                                                           id="re-order-wording"
+                                                           value="{{ reorder_wording[language.language_id] }}">
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3" id="archive_name">
+                                        <label class="col-sm-2 col-form-label"
+                                               for="input_status"><span data-toggle="tooltip"
+                                                                        title="{{ help_archive }}">{{ text_archive_name }}</span></label>
+                                        <div class="col-sm-10">
+                                            {% for language in languages %}
+                                                <div class="input-group">
+                                                    <label class="input-group-text" title="{{ language.name }}"><img
+                                                                src="{{ language.flag }}" title="{{ language.name }}"/></label>
+                                                    <input type="text" placeholder="{{ text_archive_name }}"
+                                                           class="form-control"
+                                                           name="{{ codename }}_setting[archive_name][{{ language.language_id }}]"
+                                                           id="archive_name_id"
+                                                           value="{{ archive_name[language.language_id] }}">
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3" id="public_tab_name">
+                                        <label class="col-sm-2 col-form-label"
+                                               for="input_status"><span data-toggle="tooltip"
+                                                                        title="{{ help_public_tab }}">{{ text_public_tab }}</span></label>
+                                        <div class="col-sm-10">
+                                            {% for language in languages %}
+                                                <div class="input-group">
+                                                    <label class="input-group-text" title="{{ language.name }}"><img
+                                                                src="{{ language.flag }}" title="{{ language.name }}"/></label>
+                                                    <input type="text" placeholder="{{ text_archive_name }}"
+                                                           class="form-control"
+                                                           name="{{ codename }}_setting[public_tab_name][{{ language.language_id }}]"
+                                                           id="archive_name_id"
+                                                           value="{{ public_tab_name[language.language_id] }}">
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <div class="row mb-3">
+                                                <label class="col-sm-4 col-form-label"><span data-toggle="tooltip"
+                                                                                            title="{{ help_button_design }}">{{ text_button_design }}</span></label>
+                                                <label class="col-sm-3 col-form-label"
+                                                       for="input=select">{{ text_color }}</label>
+                                                <div class="col-sm-5">
+                                                    <select name="{{ codename }}_setting[button_design][color]"
+                                                            id="input_color"
+                                                            class="form-control">
+                                                        {% for dcolor in colors %}
+                                                            <option value="{{ dcolor }}" {% if color == dcolor %} selected="selected" {% endif %}>{{ dcolor }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-3">
+                                                <label class="col-sm-4 col-form-label"><span data-toggle="tooltip"
+                                                                                            title="{{ help_rebutton_design }}">{{ entry_rebutton_design }}</span></label>
+                                                <label class="col-sm-3 col-form-label"
+                                                       for="input=select">{{ text_color }}</label>
+                                                <div class="col-sm-5">
+                                                    <select name="{{ codename }}_setting[re_order_button_design][color]"
+                                                            id="input_recolor"
+                                                            class="form-control">
+                                                        {% for rcolor in colors %}
+                                                            <option value="{{ rcolor }}" {% if recolor == rcolor %} selected="selected" {% endif %}>{{ rcolor }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-3">
+                                                <label class="col-sm-4 col-form-label"><span data-toggle="tooltip"
+                                                                                            title="{{ help_add_button_design }}">{{ entry_add_button_design }}</span></label>
+                                                <label class="col-sm-3 col-form-label"
+                                                       for="input=select">{{ text_color }}</label>
+                                                <div class="col-sm-5">
+                                                    <select name="{{ codename }}_setting[add_button_design][color]"
+                                                            id="input_add_color"
+                                                            class="form-control">
+                                                        {% for acolor in colors %}
+                                                            <option value="{{ acolor }}" {% if addcolor == acolor %} selected="selected" {% endif %}>{{ acolor }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-3">
+                                                <label class="col-sm-4 col-form-label"><span data-toggle="tooltip"
+                                                                                            title="{{ help_modal_design }}">{{ text_modal_app }}</span></label>
+                                                <label class="col-sm-3 col-form-label"
+                                                       for="input=select">{{ text_modal_bg_color }}</label>
+                                                <div class=" col-sm-5 color-picker">
+                                                    <input type="text"
+                                                           id="modal-bg-color-pick"
+                                                           name="{{ codename }}_setting[modal_view][bd_color]"
+                                                           class="form-control"
+                                                           value="{{ modal_view.bd_color }}"/>
+                                                    <span class="input-group-text"><i></i></span>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-3">
+                                                <label class="col-sm-4 col-form-label"></label>
+                                                <label class="col-sm-3 col-form-label"
+                                                       for="input=select">{{ text_modal_hd_color }}</label>
+                                                <div class=" col-sm-5 color-picker">
+                                                    <input type="text"
+                                                           id="modal-hd-color-pick"
+                                                           name="{{ codename }}_setting[modal_view][hd_color]"
+                                                           class="form-control"
+                                                           value="{{ modal_view.hd_color }}"/>
+                                                    <span class="input-group-text"><i></i></span>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-3">
+                                                <label class="col-sm-4 col-form-label"></label>
+                                                <label class="col-sm-3 col-form-label"
+                                                       for="input=select">{{ text_modal_ft_color }}</label>
+                                                <div class=" col-sm-5 color-picker">
+                                                    <input type="text"
+                                                           id="modal-ft-color-pick"
+                                                           name="{{ codename }}_setting[modal_view][ft_color]"
+                                                           class="form-control"
+                                                           value="{{ modal_view.ft_color }}"/>
+                                                    <span class="input-group-text"><i></i></span>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-3">
+                                                <label class="col-sm-4 col-form-label"></label>
+                                                <label class="col-sm-3 col-form-label"
+                                                       for="input=select">{{ text_modal_bt_close_color }}</label>
+                                                <div class="col-sm-5">
+                                                    <select name="{{ codename }}_setting[modal_view][cls_bt_color]"
+                                                            id="input_close_color"
+                                                            class="form-control">
+                                                        {% for ccolor in colors %}
+                                                            <option value="{{ ccolor }}" {% if closeColor == ccolor %} selected="selected" {% endif %}>{{ ccolor }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="row mb-3">
+                                                <div class="col-sm-1">
+                                                    <label class="control-label" type="text"
+                                                           for="input_icon">{{ text_icon }}</label>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <select name="{{ codename }}_setting[button_design][icon]"
+                                                            id="input_icon"
+                                                            class="form-control">
+                                                        {% for dicon in icons %}
+                                                            <option value="{{ dicon }}" {% if icon == dicon %} selected="selected" {% endif %}>{{ dicon }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                                <div class="col-sm-2 col-sm-offset-1">
+                                                    <label class="control-label" type="text"
+                                                           for="button_type">{{ text_example }}</label>
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <button type="button" id="button_type"
+                                                            class="btn btn-{{ color }}"
+                                                            data-container="col-md-1"><span id="ddm_icon"
+                                                                                            class="{{ icon }}"></span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-3">
+                                                <div class="col-sm-1">
+                                                    <label class="control-label" type="text"
+                                                           for="input_icon">{{ text_icon }}</label>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <select name="{{ codename }}_setting[re_order_button_design][icon]"
+                                                            id="input_reicon"
+                                                            class="form-control">
+                                                        {% for ricon in reicons %}
+                                                            <option value="{{ ricon }}" {% if reicon == ricon %} selected="selected" {% endif %}>{{ ricon }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                                <div class="col-sm-2 col-sm-offset-1">
+                                                    <label class="control-label" type="text"
+                                                           for="button_type">{{ text_example }}</label>
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <button type="button" id="rebutton_type"
+                                                            class="btn btn-{{ recolor }}"
+                                                            data-container="col-md-1"><span id="ddm_reicon"
+                                                                                            class="{{ reicon }}"></span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-3">
+                                                <div class="col-sm-1">
+                                                    <label class="control-label" type="text"
+                                                           for="input_icon">{{ text_icon }}</label>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <select name="{{ codename }}_setting[add_button_design][icon]"
+                                                            id="input_add_icon"
+                                                            class="form-control">
+                                                        {% for aicon in reicons %}
+                                                            <option value="{{ aicon }}" {% if addicon == aicon %} selected="selected" {% endif %}>{{ aicon }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                                <div class="col-sm-2 col-sm-offset-1">
+                                                    <label class="control-label" type="text"
+                                                           for="button_type">{{ text_example }}</label>
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <button type="button" id="addbutton_type"
+                                                            class="btn btn-{{ addcolor }}"
+                                                            data-container="col-md-1"><span id="ddm_addicon"
+                                                                                            class="{{ addicon }}"></span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-3">
+                                                <label class="col-sm-3 col-form-label"
+                                                       for="input=select">{{ text_modal_tl_text }}</label>
+                                                <div class=" col-sm-5 color-picker">
+                                                    <input type="text"
+                                                           id="modal-tl-tx-color-pick"
+                                                           name="{{ codename }}_setting[modal_view][tl_text_color]"
+                                                           class="form-control"
+                                                           value="{{ modal_view.tl_text_color }}"/>
+                                                    <span class="input-group-text"><i></i></span>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-3">
+                                                <label class="col-sm-3 col-form-label"
+                                                       for="input=select">{{ text_modal_bd_text }}</label>
+                                                <div class=" col-sm-5 color-picker">
+                                                    <input type="text"
+                                                           id="modal-bd-tx-color-pick"
+                                                           name="{{ codename }}_setting[modal_view][bd_text_color]"
+                                                           class="form-control"
+                                                           value="{{ modal_view.bd_text_color }}"/>
+                                                    <span class="input-group-text"><i></i></span>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-3">
+                                                <label class="col-sm-3 col-form-label"
+                                                       for="input=select">{{ text_modal_bt_close_text }}</label>
+                                                <div class=" col-sm-5 color-picker">
+                                                    <input type="text"
+                                                           id="modal-cls-bt-tx-color-pick"
+                                                           name="{{ codename }}_setting[modal_view][cls_bt_text_color]"
+                                                           class="form-control"
+                                                           value="{{ modal_view.cls_bt_text_color }}"/>
+                                                    <span class="input-group-text"><i></i></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                    <div class="col-md-12 col-sm-12  col-xs-12">
+                                        <div class="alert alert-info empty-chart-info" style="text-align: center;">{{ text_modal_preview }}</div>
+                                    </div>
+                                    </div>
+                                        <div class="row mb-3">
+                                        <div id="myModal" role="dialog">
+                                            <div class="modal-dialog">
+                                                <!-- Modal content-->
+                                                <div class="modal-content">
+                                                    <div class="modal-header" id="modal-header">
+                                                        <h4 id="modal-tl"
+                                                            class="modal-title text-center">Re-order products in one click!</h4>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                                    </div>
+                                                    <div class="modal-body" id="modal-body">
+                                                        <p>
+                                                        <table class="table table-bordered table-hover">
+                                                            <thead>
+                                                            <tr>
+                                                                <td class="text-left">{{ entry_product_image }}</td>
+                                                                <td class="text-left">{{ entry_product_name }}</td>
+                                                                <td class="text-center">{{ entry_product_price }}</td>
+                                                                <td class="text-center">{{ entry_action }}</td>
+                                                            </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                            <tr id="tb-hover">
+                                                                <td class="text-center"> <span
+                                                                            class="img-thumbnail list"><i
+                                                                                class="fa fa-camera fa-2x"></i></span>
+                                                                </td>
+                                                                <td class="text-left">Fabulous Product</td>
+                                                                <td class="text-center">$100.00</td>
+                                                                <td class="text-center">
+                                                                    <button type="button" id="add-button_type"
+                                                                            class="btn btn-{{ addcolor }}"
+                                                                            data-container="col-md-1"><span
+                                                                                id="ddm_add-icon"
+                                                                                class="{{ addicon }}"></span>
+                                                                    </button>
+                                                            </tr>
+                                                            </tbody>
+                                                        </table>
+                                                        </p>
+                                                    </div>
+                                                    <div class="modal-footer" id="modal-footer">
+                                                        <button type="button" id="cls-button"
+                                                                class="btn btn-{{ closeColor }}"
+                                                                data-dismiss="modal">{{ text_close }}
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3" id="file-template">
+                                        <label class="col-sm-2 col-form-label" for="input-file-mime-allowed"><span
+                                                    data-toggle="tooltip"
+                                                    title="{{ help_file_template }}">{{ text_file_template }}</span></label>
+                                        <div class="col-sm-10">
+                                            <textarea rows="15"
+                                                      placeholder="{{ text_file_template }}"
+                                                      name="{{ codename }}_setting[file_template]"
+                                                      id="key-file-template"
+                                                      class="form-control">{{ file_template }}</textarea>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3" id="custom-style">
+                                        <label class="control-label col-md-2" for="input-name"><span
+                                                    data-toggle="tooltip"
+                                                    title="{{ help_custom }}">{{ entry_custom_style }}</span></label>
+                                        <div class="col-md-10">
+                                            <textarea style="height: 130px;" class="form-control"
+                                                      name="{{ codename }}_setting[custom_style]"
+                                                      id="d_download_manager_cc">{{ custom_style ? custom_style : '' }}</textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="tab_instruction">
+                                <div class="tab-body">
+                                    <div class="instruction" style="max-width:700px"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="text-align: center; padding: 30px;">{{ text_powered_by }}</div>
+                    </form>
+                {% else %}
+                    {{ text_setup }}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <style>
+        table, th, td {
+            background-color: transparent !important;
+        }
+
+        .dma:hover {
+            color: red !important;
+        }
+
+        .alert-minimalist {
+            background-color: rgb(241, 242, 240);
+            border-color: rgba(149, 149, 149, 0.3);
+            border-radius: 3px;
+            color: rgb(149, 149, 149);
+            padding: 10px;
+        }
+
+        .alert-minimalist > [data-notify="icon"] {
+            height: 50px;
+            margin-right: 12px;
+        }
+
+        .alert-minimalist > [data-notify="title"] {
+            color: rgb(51, 51, 51);
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .alert-minimalist > [data-notify="message"] {
+            font-size: 80%;
+        }
+
+        #chartAn {
+            padding-bottom: 10px;
+        }
+
+        #myModal {
+            background: rgba(0,0,0,0.6) !important;
+            padding: 30px;
+            box-shadow: inset 0 0 30px 0 rgba(0,0,0,0.5) !important;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
+    <script type="text/javascript">
+        $("#input_color").on('change', function () {
+            $("#button_type").attr('class', 'btn btn-' + $(this).find("option:selected").val());
+        });
+
+        $("#input_icon").on('change', function () {
+            $("#ddm_icon").attr('class', $("#input_icon").val());
+        });
+        $("#input_recolor").on('change', function () {
+            $("#rebutton_type").attr('class', 'btn btn-' + $(this).find("option:selected").val());
+        });
+
+        $("#input_reicon").on('change', function () {
+            $("#ddm_reicon").attr('class', $("#input_reicon").val());
+        });
+        $("#input_add_color").on('change', function () {
+            $("#add-button_type").attr('class', 'btn btn-' + $(this).find("option:selected").val());
+            $("#addbutton_type").attr('class', 'btn btn-' + $(this).find("option:selected").val());
+        });
+        $("#input_close_color").on('change', function () {
+            $("#cls-button").attr('class', 'btn btn-' + $(this).find("option:selected").val());
+        });
+
+        $("#input_add_icon").on('change', function () {
+            $("#ddm_add-icon").attr('class', $("#input_add_icon").val());
+            $("#ddm_addicon").attr('class', $("#input_add_icon").val());
+        });
+
+        $(document).ready(function () {
+            $("#modal-bg-color-pick").change(function () {
+                $("#modal-body").css('background-color', $("#modal-bg-color-pick").val());
+            });
+            $("#modal-hd-color-pick").change(function () {
+                $("#modal-header").css('background-color', $("#modal-hd-color-pick").val());
+            });
+            $("#modal-ft-color-pick").change(function () {
+                $("#modal-footer").css('background-color', $("#modal-ft-color-pick").val());
+            });
+            $("#close-button-color-pick").change(function () {
+                $("#cls-button").css('background-color', $("#close-button-color-pick").val());
+            });
+            $("#modal-tl-tx-color-pick").change(function () {
+                $("#modal-tl").css('color', $("#modal-tl-tx-color-pick").val());
+            });
+            $("#modal-bd-tx-color-pick").change(function () {
+                $("#modal-body").css('color', $("#modal-bd-tx-color-pick").val());
+            });
+            $("#modal-cls-bt-tx-color-pick").change(function () {
+                $("#cls-button").css('color', $("#modal-cls-bt-tx-color-pick").val());
+            });
+        });
+
+
+    </script>
+    <script>
+        $(function () {
+            $('.color-picker').colorpicker();
+        });
+
+        {% if analytics %}
+        $(document).ready(function () {
+            $.ajax({
+                type: 'post',
+                url: '{{ get_analytics_data_link }}',
+                data: $('#form').serialize(),
+                dataType: 'json',
+                beforeSend: function () {
+                    // $('#content').fadeTo('slow', 0.5);
+                },
+                complete: function () {
+                    // $('#content').fadeTo('slow', 1);
+                },
+                success: function (json) {
+                    chartRender(json);
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+                }
+            });
+            return false;
+        });
+
+        var myBarChart;
+        function chartRender(data) {
+            var ctx = $('#myChart');
+            var option = {
+                legend: {
+                    display: false
+                },
+                tooltips: {
+                    callbacks: {
+                        label: function (tooltipItem) {
+                            return tooltipItem.yLabel;
+                        }
+                    }
+                },
+                animation: {
+                    duration: 3000
+                },
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    xAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        },
+                        display: false,
+                        stacked: false
+                    }],
+                    yAxes: [{
+                        stacked: true
+                    }]
+                }
+            };
+            myBarChart = new Chart(ctx, {
+                type: 'bar',
+                data: data,
+                options: option
+            });
+            myBarChart.render();
+        }
+        chartRender();
+        {% endif %}
+
+        $('body').on('click', '#ClearHistory', function (e) {
+            var downloadID = $(e.currentTarget).attr('data-download-id');
+            if (confirm('Are you sure you want to remove this download analytic information?')) {
+                $.ajax({
+                    url: '{{ clear_analytic_history_link }}',
+                    type: 'post',
+                    data: 'download_id=' + downloadID,
+                    dataType: 'json',
+                    beforeSend: function () {
+                        $('#table_analytic').fadeTo('slow', 0.5);
+                    },
+                    complete: function () {
+                        $('#table_analytic').fadeTo('slow', 1);
+                    },
+                    success: function (json) {
+
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        $.notify({
+                            icon: 'view/image/d_download_manager_pro/logo.png',
+                            title: '{{ heading_title_main }}',
+                            message: '{{ entry_success }}: {{ text_success_clear_history }}'
+                        }, {
+                            type: 'minimalist',
+                            animate: {
+                                enter: 'animated fadeInUp',
+                                exit: 'animated fadeOutRight'
+                            },
+                            placement: {
+                                from: "bottom",
+                                align: "right"
+                            },
+                            delay: 2000,
+                            icon_type: 'image',
+                            template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
+                            '<img data-notify="icon" class="img-circle pull-left">' +
+                            '<span data-notify="title">{1}</span>' +
+                            '<span data-notify="message" style="font-size: large;">{2}</span>' +
+                            '</div>'
+                        });
+                        location.reload();
+                    }
+                });
+            } else {
+                // Do nothing!
+            }
+
+        });
+
+        $('body').on('click', '#SaveDownloadComment', function (e) {
+            var downloadID = $(e.currentTarget).attr('data-download-id');
+            var comment = $('#downloadComment_' + downloadID).val();
+
+            if ($('#downloadComment_' + downloadID).val() == '') {
+                $.notify({
+                    icon: 'view/image/d_download_manager_pro/logo.png',
+                    title: '{{ heading_title_main }}',
+                    message: '{{ entry_error }}: {{ text_error_key }}'
+                }, {
+                    type: 'minimalist',
+                    animate: {
+                        enter: 'animated fadeInUp',
+                        exit: 'animated fadeOutRight'
+                    },
+                    placement: {
+                        from: "bottom",
+                        align: "right"
+                    },
+                    delay: 2000,
+                    icon_type: 'image',
+                    template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
+                    '<img data-notify="icon" class="img-circle pull-left">' +
+                    '<span data-notify="title">{1}</span>' +
+                    '<span data-notify="message" style="font-size: large;">{2}</span>' +
+                    '</div>'
+                });
+            } else {
+                $.ajax({
+                    url: '{{ save_analytic_comment_link }}',
+                    type: 'post',
+                    data: 'download_id=' + downloadID + '&comment=' + comment,
+                    dataType: 'json',
+                    beforeSend: function () {
+                        $('#table_analytic').fadeTo('slow', 0.5);
+                    },
+                    complete: function () {
+                        $('#table_analytic').fadeTo('slow', 1);
+                    },
+                    success: function (json) {
+
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        $.notify({
+                            icon: 'view/image/d_download_manager_pro/logo.png',
+                            title: '{{ heading_title_main }}',
+                            message: '{{ entry_success }}: {{ text_success_comment_save }}'
+                        }, {
+                            type: 'minimalist',
+                            animate: {
+                                enter: 'animated fadeInUp',
+                                exit: 'animated fadeOutRight'
+                            },
+                            placement: {
+                                from: "bottom",
+                                align: "right"
+                            },
+                            delay: 2000,
+                            icon_type: 'image',
+                            template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
+                            '<img data-notify="icon" class="img-circle pull-left">' +
+                            '<span data-notify="title">{1}</span>' +
+                            '<span data-notify="message" style="font-size: large;">{2}</span>' +
+                            '</div>'
+                        });
+                    }
+                });
+            }
+
+        });
+    </script>
+
+    <script type="text/javascript">
+        $('body').on('click', '#SaveDateOrder', function (e) {
+            var orderID = $(e.currentTarget).attr('data-order-id');
+            var days = $('#oneOrderDays_' + orderID).val();
+
+            $.ajax({
+                url: '{{ set_expire_date_order_link }}',
+                type: 'post',
+                data: 'order_id=' + orderID + '&orderDays=' + days,
+                dataType: 'json',
+                success: function (json) {
+
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+                }
+            });
+        });
+
+        $('body').on('click', '#ResetOrderDate', function (e) {
+            var orderID = $(e.currentTarget).attr('data-order-reset-id');
+
+            $.ajax({
+                url: '{{ reset_expire_date_order_link }}',
+                type: 'post',
+                data: 'order_id=' + orderID,
+                dataType: 'json',
+                success: function (json) {
+
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+                }
+            });
+        });
+
+        $(document).on('click', '.setup', function () {
+            window.location.href = '{{ setup_link }}';
+        });
+
+        $('body').on('click', '#SaveDownloadDate', function (e) {
+            var downloadID = $(e.currentTarget).attr('data-download-id');
+            var days = $('#oneDownloadDays_' + downloadID).val();
+
+            if ($('#oneDownloadDays_' + downloadID).val() == '') {
+                $.notify({
+                    icon: 'view/image/d_download_manager_pro/logo.png',
+                    title: '{{ heading_title_main }}',
+                    message: '{{ entry_error }}: {{ text_error_key }}'
+                }, {
+                    type: 'minimalist',
+                    animate: {
+                        enter: 'animated fadeInUp',
+                        exit: 'animated fadeOutRight'
+                    },
+                    placement: {
+                        from: "bottom",
+                        align: "right"
+                    },
+                    delay: 2000,
+                    icon_type: 'image',
+                    template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
+                    '<img data-notify="icon" class="img-circle pull-left">' +
+                    '<span data-notify="title">{1}</span>' +
+                    '<span data-notify="message" style="font-size: large;">{2}</span>' +
+                    '</div>'
+                });
+            } else {
+                $.ajax({
+                    url: '{{ set_expire_date_download_link }}',
+                    type: 'post',
+                    data: 'download_id=' + downloadID + '&downloadDays=' + days,
+                    dataType: 'json',
+                    beforeSend: function () {
+                        $('#tab_downloads').fadeTo('slow', 0.5);
+                    },
+                    complete: function () {
+                        $('#tab_downloads').fadeTo('slow', 1);
+                    },
+                    success: function (json) {
+
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        $.notify({
+                            icon: 'view/image/d_download_manager_pro/logo.png',
+                            title: '{{ heading_title_main }}',
+                            message: '{{ entry_success }}: {{ text_success_save_date }}'
+                        }, {
+                            type: 'minimalist',
+                            animate: {
+                                enter: 'animated fadeInUp',
+                                exit: 'animated fadeOutRight'
+                            },
+                            placement: {
+                                from: "bottom",
+                                align: "right"
+                            },
+                            delay: 2000,
+                            icon_type: 'image',
+                            template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
+                            '<img data-notify="icon" class="img-circle pull-left">' +
+                            '<span data-notify="title">{1}</span>' +
+                            '<span data-notify="message" style="font-size: large;">{2}</span>' +
+                            '</div>'
+                        });
+                    }
+                });
+            }
+        });
+        $('body').on('click', '#ResetDownloadDate', function (e) {
+            var downloadID = $(e.currentTarget).attr('data-download-reset-id');
+
+            $.ajax({
+                url: '{{ reset_expire_date_download_link }}',
+                type: 'post',
+                data: 'download_id=' + downloadID,
+                dataType: 'json',
+                beforeSend: function () {
+                    $('#tab_downloads').fadeTo('slow', 0.5);
+                },
+                complete: function () {
+                    $('#tab_downloads').fadeTo('slow', 1);
+                },
+                success: function (json) {
+
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    $.notify({
+                        icon: 'view/image/d_download_manager_pro/logo.png',
+                        title: '{{ heading_title_main }}',
+                        message: '{{ entry_success }}: {{ text_success_set_unltd }}'
+                    }, {
+                        type: 'minimalist',
+                        animate: {
+                            enter: 'animated fadeInUp',
+                            exit: 'animated fadeOutRight'
+                        },
+                        placement: {
+                            from: "bottom",
+                            align: "right"
+                        },
+                        delay: 2000,
+                        icon_type: 'image',
+                        template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
+                        '<img data-notify="icon" class="img-circle pull-left">' +
+                        '<span data-notify="title">{1}</span>' +
+                        '<span data-notify="message" style="font-size: large;">{2}</span>' +
+                        '</div>'
+                    });
+                    $('#oneDownloadDays_' + downloadID).val('');
+                    return false;
+                }
+            });
+        });
+
+        var url = 'https://dreamvention.ee/download-manager-pro-instructions';
+
+        $.getJSON(url + '?format=json&callback=?', function (data) {
+            $('.instruction').html(data['description']);
+        });
+
+
+        $('body').on('click', '#editOneOrder', function (e) {
+            var orderID = $(e.currentTarget).attr('data-order-id');
+            var days = $('#oneOrderDays_' + orderID).val();
+            var action = $(e.currentTarget).attr('data-action');
+
+            $.ajax({
+                url: '{{ edit_one_order }}',
+                type: 'post',
+                data: 'order_id=' + orderID + '&orderDays=' + days + '&action=' + action,
+                dataType: 'json',
+                success: function (json) {
+
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+                }
+            });
+        });
+
+
+        $('body').on('click', '#save_and_stay', function () {
+            $.ajax({
+                type: 'post',
+                url: $('#form').attr('action'),
+                data: $('#form').serialize(),
+                dataType: 'json',
+                beforeSend: function () {
+                    $('#content').fadeTo('slow', 0.5);
+                },
+                complete: function () {
+                    $('#content').fadeTo('slow', 1);
+                },
+                success: function (json) {
+
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    $.notify({
+                        icon: 'view/image/d_download_manager_pro/logo.png',
+                        title: '{{ heading_title_main }}',
+                        message: '{{ entry_success }}: {{ text_success_save }}'
+                    }, {
+                        type: 'minimalist',
+                        animate: {
+                            enter: 'animated fadeInUp',
+                            exit: 'animated fadeOutRight'
+                        },
+                        placement: {
+                            from: "bottom",
+                            align: "right"
+                        },
+                        delay: 2000,
+                        icon_type: 'image',
+                        template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
+                        '<img data-notify="icon" class="img-circle pull-left">' +
+                        '<span data-notify="title">{1}</span>' +
+                        '<span data-notify="message" style="font-size: large;">{2}</span>' +
+                        '</div>'
+                    });
+                }
+            });
+        });
+
+        $('body').on('click', '#save_and_quit', function () {
+            $.notify({
+                icon: 'view/image/d_download_manager_pro/logo.png',
+                title: '{{ heading_title_main }}',
+                message: '{{ entry_success }}: {{ text_success_save }}'
+            }, {
+                type: 'minimalist',
+                animate: {
+                    enter: 'animated fadeInUp',
+                    exit: 'animated fadeOutRight'
+                },
+                placement: {
+                    from: "bottom",
+                    align: "right"
+                },
+                delay: 2000,
+                icon_type: 'image',
+                template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
+                '<img data-notify="icon" class="img-circle pull-left">' +
+                '<span data-notify="title">{1}</span>' +
+                '<span data-notify="message" style="font-size: large;">{2}</span>' +
+                '</div>'
+            });
+        });
+
+        $('body').on('click', '#editOneDownload', function (e) {
+            var downloadID = $(e.currentTarget).attr('data-download-id');
+            var days = $('#oneDownloadDays_' + downloadID).val();
+            var action = $(e.currentTarget).attr('data-action');
+
+            $.ajax({
+                url: '{{ edit_one_download }}',
+                type: 'post',
+                data: 'download_id=' + downloadID + '&downloadDays=' + days + '&action=' + action,
+                dataType: 'json',
+                success: function (json) {
+
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+                }
+            });
+        });
+
+        $('body').on('click', '#deductOneDownload', function (e) {
+            var downloadID = $(e.currentTarget).attr('data-download-id');
+            var action = $(e.currentTarget).attr('data-action');
+            var days = $('#oneDownloadDays_' + downloadID).val();
+
+
+            $.ajax({
+                url: '{{ edit_one_download }}',
+                type: 'post',
+                data: 'download_id=' + downloadID + '&downloadDays=' + days + '&action=' + action,
+                dataType: 'json',
+                success: function (json) {
+
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+                }
+            });
+        });
+
+        $('body').on('click', '#removeDownload', function (e) {
+            if (confirm('{{ text_confirm_delete }}')) {
+                var selected = [];
+                $('input[name*=\'selected\']').each(function (key, value) {
+                    if ($('input[name*=\'selected\']')[key].checked == true) {
+                        selected.push($('input[name*=\'selected\']')[key].value)
+                    }
+                });
+
+                $.ajax({
+                    url: '{{ remove_download_link }}',
+                    type: 'post',
+                    data: 'selected=' + selected,
+                    dataType: 'json',
+                    success: function (json) {
+
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        $.notify({
+                            icon: 'view/image/d_download_manager_pro/logo.png',
+                            title: '{{ heading_title_main }}',
+                            message: '{{ entry_success }}: {{ text_success_download_remove }}'
+                        }, {
+                            type: 'minimalist',
+                            animate: {
+                                enter: 'animated fadeInUp',
+                                exit: 'animated fadeOutRight'
+                            },
+                            placement: {
+                                from: "bottom",
+                                align: "right"
+                            },
+                            delay: 2000,
+                            icon_type: 'image',
+                            template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
+                            '<img data-notify="icon" class="img-circle pull-left">' +
+                            '<span data-notify="title">{1}</span>' +
+                            '<span data-notify="message" style="font-size: large;">{2}</span>' +
+                            '</div>'
+                        });
+
+                        $('body').load('{{ module_link }}', 'body');
+                        return false;
+                    }
+                });
+            } else {
+
+            }
+        });
+
+        $('body').on('click', '#resetOneDownload', function (e) {
+            var downloadID = $(e.currentTarget).attr('data-download-id');
+            var action = $(e.currentTarget).attr('data-action');
+            var days = $('#oneDownloadDays_' + downloadID).val();
+
+
+            $.ajax({
+                url: '{{ edit_one_download }}',
+                type: 'post',
+                data: 'download_id=' + downloadID + '&downloadDays=' + days + '&action=' + action,
+                dataType: 'json',
+                success: function (json) {
+
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+                }
+            });
+        });
+
+        $(document).on('click', '#tab_tools .pagination li a', function (ev) {
+            $('#tab_tools').load(ev.currentTarget.href + ' #tab_tools > div');
+            return false;
+        });
+
+        $(document).on('click', '#tab_downloads .pagination li a', function (ev) {
+            $('#tab_downloads').load(ev.currentTarget.href + ' #tab_downloads > div');
+            return false;
+        });
+
+        $(document).on('click', '#tab_products .pagination li a', function (ev) {
+            $('#tab_products').load(ev.currentTarget.href + ' #tab_products > div');
+            return false;
+        });
+
+        $(document).ajaxComplete(function (event, xhr, settings) {
+            $('.switcher').each(function (index, elem) {
+                //Initialize all switches if they haven't been already
+                if (!$(elem).hasClass('has-switcher')) {
+                    $(".switcher[type='checkbox']").bootstrapSwitch({
+                        'onColor': 'success',
+                        'onText': '{{ text_yes }}',
+                        'offText': '{{ text_no }}'
+                    });
+                }
+            });
+        });
+
+    </script>
+    <script type="text/javascript">
+        //checkbox
+        $(".switcher[type='checkbox']").bootstrapSwitch({
+            'onColor': 'success',
+            'onText': '{{ text_yes }}',
+            'offText': '{{ text_no }}',
+            'onSwitchChange': function (event, state) {
+                if (event.target.name == 'setting[limit_block]' && state == true) {
+                    $('.switcher[name=\'setting[limit_height]\']').bootstrapSwitch({'state': 'false'});
+                }
+                if (event.target.name == 'setting[limit_height]' && state == true) {
+                    $('.switcher[name=\'setting[limit_height]\']').bootstrapSwitch({'state': 'false'});
+                }
+            }
+        });
+
+    </script>
+</div>
+{{ footer }}

@@ -1,0 +1,17 @@
+<div class="row mb-3">
+    <label class="col-sm-2 col-form-label" for="input-mask">
+        <span data-toggle="tooltip" title="{{ help_download }}">
+            {{ entry_expired_days }}
+        </span>
+    </label>
+    <div class="col-sm-10">
+        <div class="input-group">
+            <span class="input-group-addon">{{ text_days }}</span>
+            <input type="number" placeholder="{{ number_of_days }}"
+                   class="form-control" min="-1"
+                   name="download-period"
+                   id="oneDownloadDays_{{ download_id }}"
+                   value="{{ expiration_days }}">
+        </div>
+    </div>
+</div>
